@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <meta name="description" content="Cứu Truyện - Ví & Nạp Tiền">
+    <title>Cứu Truyện - Ví Của Tôi</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background-color: var(--primary-bg);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 16px;
+            color: #fff;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::after {
+            content: "\f51e";
+            /* Coin icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: -20px;
+            bottom: -30px;
+            font-size: 10rem;
+            color: rgba(255, 255, 255, 0.05);
+            transform: rotate(-15deg);
+        }
+
+        .deposit-card {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .package-item {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .package-item:hover {
+            border-color: #a2bdf8;
+            background-color: #f8fafe;
+        }
+
+        .package-item.active {
+            border-color: #f7a928;
+            background-color: #fffcf5;
+        }
+
+        .history-table th {
+            font-weight: 600;
+            color: #7a6e67;
+            background-color: #f8f9fa;
+        }
+
+        .text-income {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .text-expense {
+            color: #c62828;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Bắt đầu Header -->
+    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
+        <div class="container-fluid px-5">
+            <div class="row align-items-center">
+                <div class="col-5 d-flex align-items-center gap-4 header-links">
+                    <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
+                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-decoration-none fw-bold text-uppercase">Discord</a>
+                    <a href="dang-truyen.html" id="navUploadManga"
+                        class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
+                    <a href="quan-ly-nhom.html" id="navManageGroup"
+                        class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
+                    <a href="quan-ly-he-thong.html" id="navSystemAdmin"
+                        class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
+                </div>
+                <div class="col-2 text-center">
+                    <a href="index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
+                        CỨU TRUYỆN
+                    </a>
+                </div>
+                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
+                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
+
+                    <!-- Guest View -->
+                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Đăng nhập</button>
+                        <button class="btn btn-dark fw-bold rounded-pill px-3">Đăng ký</button>
+                    </div>
+
+                    <!-- Logged In View -->
+                    <div id="headerUserView" class="d-flex align-items-center gap-3 d-none">
+                        <button class="btn-circular btn-icon"><i class="fa-solid fa-bell"></i></button>
+                        <div class="dropdown">
+                            <button class="btn-circular btn-user fw-bold border-0" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <span id="headerAvatarText">F</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
+                                        dõi</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
+                                </li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
+                                        href="dang-truyen.html">Đăng truyện</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
+                                        xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="py-5">
+        <div class="container mx-auto" style="max-width: 1200px;">
+            <div class="row g-4">
+                <!-- Left Column: Balance & Deposit Form -->
+                <div class="col-5">
+                    <!-- Dashboard Balance -->
+                    <div class="balance-card mb-4">
+                        <h6 class="text-uppercase text-white-50 fw-bold mb-1">Số dư hiện tại</h6>
+                        <div class="d-flex align-items-center mb-3">
+                            <h2 class="display-4 fw-bold mb-0 me-2 text-warning" id="currentBalance">0</h2>
+                            <span class="fs-4 fw-bold">Xu</span>
+                        </div>
+                        <p class="mb-0 text-white-50 small"><i class="fa-solid fa-shield-halved me-1"></i> An toàn và
+                            bảo mật</p>
+                    </div>
+
+                    <!-- Deposit Section -->
+                    <div class="deposit-card p-4">
+                        <h5 class="fw-bold fs-5 mb-4 text-dark border-bottom pb-2">Nạp Tiền (Quy đổi)</h5>
+
+                        <div class="alert alert-info py-2" role="alert">
+                            <i class="fa-solid fa-circle-info me-2"></i><strong>Tỷ giá:</strong> 10,000 VNĐ = 100 Xu
+                        </div>
+
+                        <label class="form-label fw-bold text-secondary mb-3">Chọn gói nạp nhanh:</label>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <div class="package-item" onclick="selectPackage(this, 10000)">
+                                    <h6 class="fw-bold text-dark mb-1">10,000đ</h6>
+                                    <span class="text-warning fw-bold"><i class="fa-solid fa-coins"></i> 100 Xu</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="package-item active" onclick="selectPackage(this, 50000)">
+                                    <h6 class="fw-bold text-dark mb-1">50,000đ</h6>
+                                    <span class="text-warning fw-bold"><i class="fa-solid fa-coins"></i> 500 Xu</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="package-item" onclick="selectPackage(this, 100000)">
+                                    <h6 class="fw-bold text-dark mb-1">100,000đ</h6>
+                                    <span class="text-warning fw-bold"><i class="fa-solid fa-coins"></i> 1,000 Xu</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="package-item" onclick="selectPackage(this, 500000)">
+                                    <h6 class="fw-bold text-dark mb-1">500,000đ</h6>
+                                    <span class="text-warning fw-bold" style="color: #d35400 !important;"><i
+                                            class="fa-solid fa-coins"></i> 5,500 Xu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Hoặc nhập số tiền khác (VNĐ)</label>
+                            <input type="number" id="customAmount" class="form-control form-control-lg"
+                                placeholder="Ví dụ: 20000" oninput="calculateCustomCoin()">
+                            <div class="mt-2 text-success fw-bold d-none" id="customResult">Nhận được: <span>0</span> Xu
+                            </div>
+                        </div>
+
+                        <button class="btn btn-dark w-100 py-3 fw-bold fs-5 rounded-3">TIẾN HÀNH THANH TOÁN</button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Transaction History -->
+                <div class="col-7">
+                    <div class="deposit-card p-4 h-100">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+                            <h5 class="fw-bold fs-5 mb-0 text-dark">Lịch sử dòng tiền</h5>
+                            <button class="btn btn-sm btn-outline-secondary">Tất cả</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover history-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 25%">Thời gian</th>
+                                        <th style="width: 45%">Mô tả</th>
+                                        <th style="width: 30%" class="text-end">Biến động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionList">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="search-overlay d-none">
+        <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+            <div class="position-relative">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+            </div>
+        </div>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Lấy số dư ví thực
+                const wallet = await ApiService.getMyWallet();
+                const balance = wallet.balance || 0;
+                document.getElementById('currentBalance').textContent = balance.toLocaleString();
+
+                // Lấy lịch sử giao dịch của user hiện tại
+                const allTx = await ApiService.getAllTransactions();
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const myTx = allTx.filter(tx =>
+                    tx.wallet && tx.wallet.user && tx.wallet.user.username === user.username
+                );
+
+                const txList = document.getElementById('transactionList');
+                if (myTx.length === 0) {
+                    txList.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted">Chưa có giao dịch nào.</td></tr>';
+                } else {
+                    const typeMap = {
+                        deposit: 'Nạp tiền',
+                        purchase: 'Mở khóa chương',
+                        refund: 'Hoàn tiền',
+                        withdrawal_pending: 'Rút tiền (chờ duyệt)',
+                        withdrawal_approved: 'Rút tiền (đã duyệt)',
+                        withdrawal_rejected: 'Rút tiền (từ chối)'
+                    };
+                    txList.innerHTML = myTx.map(tx => {
+                        const date = new Date(tx.createdAt).toLocaleString('vi-VN');
+                        const isIncome = tx.type === 'deposit' || tx.type === 'refund' || tx.type === 'withdrawal_rejected';
+                        const typeClass = isIncome ? 'text-income' : 'text-expense';
+                        const typeBadge = isIncome ? 'bg-success' : 'bg-danger';
+
+                        return `
+                            <tr>
+                                <td class="text-muted small">${date}</td>
+                                <td><span class="badge ${typeBadge} me-2">${typeMap[tx.type] || tx.type}</span> ${tx.note || ''}</td>
+                                <td class="text-end ${typeClass}">${isIncome ? '+' : '-'}${tx.amount.toLocaleString()} Xu</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error("Error loading wallet:", err);
+                document.getElementById('currentBalance').textContent = '100,000';
+            }
+        });
+
+        function selectPackage(element, amount) {
+            document.querySelectorAll('.package-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('customAmount').value = '';
+            document.getElementById('customResult').classList.add('d-none');
+        }
+
+        function calculateCustomCoin() {
+            document.querySelectorAll('.package-item').forEach(el => el.classList.remove('active'));
+            const input = document.getElementById('customAmount').value;
+            const res = document.getElementById('customResult');
+            if (input && parseInt(input) > 0) {
+                res.classList.remove('d-none');
+                res.querySelector('span').textContent = Math.floor(parseInt(input) / 100);
+            } else {
+                res.classList.add('d-none');
+            }
+        }
+    </script>
+</body>
+
+</html>

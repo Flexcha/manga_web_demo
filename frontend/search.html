@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200"> <!-- Cố định kích thước cho Desktop -->
+    <meta name="description" content="Cứu Truyện - Tìm kiếm nâng cao">
+    <title>Cứu Truyện - Tìm kiếm</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        .custom-tag-pill {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f7f9fa;
+            border: 1px solid #e0e4e8;
+            border-radius: 50px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #3b4249;
+        }
+
+        .custom-tag-pill:hover {
+            background-color: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        .tag-count {
+            background-color: #e2e8ec;
+            color: #475569;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 50px;
+            margin-left: 8px;
+            font-weight: 700;
+        }
+
+        .search-page-btn {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+            border: none;
+        }
+
+        .search-page-btn:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Bắt đầu Header -->
+    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
+        <div class="container-fluid px-5">
+            <div class="row align-items-center">
+                <!-- Navigation Left -->
+                <div class="col-5 d-flex align-items-center gap-4 header-links">
+                    <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
+                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-decoration-none fw-bold text-uppercase">Discord</a>
+                    <a href="dang-truyen.html" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
+                    <a href="quan-ly-nhom.html" id="navManageGroup" class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
+                    <a href="quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
+                </div>
+
+                <!-- Logo Center -->
+                <div class="col-2 text-center">
+                    <a href="index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
+                        CỨU TRUYỆN
+                    </a>
+                </div>
+
+                <!-- Action Icons Right -->
+                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
+                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    
+                    <!-- Guest View -->
+                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
+                        <button class="btn btn-dark fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
+                    </div>
+
+                    <!-- User View (Hidden by default) -->
+                    <div id="headerUserView" class="d-none align-items-center gap-3">
+                        <button class="btn-circular btn-icon"><i class="fa-regular fa-bell"></i></button>
+                        <div class="dropdown">
+                            <div class="avatar-circle dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer; width: 40px; height: 40px; background: #f7a928; color: white; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold;">
+                                <span id="headerAvatarText">U</span>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2" style="min-width: 220px; border-radius: 12px;">
+                                <li><a class="dropdown-item py-2 fw-bold" href="theo-doi.html"><i class="fa-solid fa-heart me-2 text-danger"></i> Truyện đang theo dõi</a></li>
+                                <li><a class="dropdown-item py-2 fw-bold" href="da-doc.html"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i> Truyện đang đọc</a></li>
+                                <li><a class="dropdown-item py-2 fw-bold" href="my-wallet.html"><i class="fa-solid fa-wallet me-2 text-warning"></i> Ví của tôi</a></li>
+                                <li id="menuUploadManga" class="d-none"><a class="dropdown-item py-2 fw-bold" href="dang-truyen.html"><i class="fa-solid fa-upload me-2 text-success"></i> Đăng truyện</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 fw-bold" href="settings.html"><i class="fa-solid fa-gear me-2 text-secondary"></i> Cài đặt</a></li>
+                                <li><a class="dropdown-item py-2 fw-bold text-danger" href="#" id="btnLogout"><i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Kết thúc Header -->
+
+    <!-- Main Content -->
+    <main class="py-5" style="min-height: 80vh;">
+        <div class="container px-0 mx-auto" style="max-width: 900px;">
+
+            <h3 class="fw-bold mb-4" style="color: #4a5568;">TÌM KIẾM</h3>
+
+            <form action="#" method="GET">
+                <!-- Input Truyện -->
+                <div class="mb-3">
+                    <input type="text" class="form-control form-control-lg border-0 shadow-sm rounded-3 py-3 px-4"
+                        placeholder="Tìm kiếm truyện" style="font-size: 1.05rem;">
+                </div>
+
+                <!-- Input Thẻ -->
+                <div class="mb-4">
+                    <input type="text" class="form-control form-control-lg border-0 shadow-sm rounded-3 py-3 px-4"
+                        placeholder="Tìm kiếm theo thẻ" style="font-size: 1.05rem;">
+
+                    <!-- Hướng dẫn Cú pháp -->
+                    <div class="mt-2 text-muted" style="font-size: 0.85rem;">
+                        Cú pháp: sử dụng các toán tử <strong>AND, OR, NOT</strong> và dấu ngoặc đơn <strong>(
+                            )</strong>.
+                        Ví dụ: <code
+                            class="bg-light px-2 py-1 rounded border text-dark ms-1">"action" AND ("adventure" OR "fantasy") AND NOT "horror"</code>
+                    </div>
+                </div>
+
+                <!-- Thẻ Phổ biến -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem;">THẺ PHỔ BIẾN</h6>
+
+                    <div class="d-flex flex-wrap gap-2">
+
+                        <!-- MẪU VÒNG LẶP JAVA CHO RENDER THẺ (TAGS) TỪ DATABASE -->
+                        <!-- Ví dụ: <c:forEach var="tag" items="\${popularTags}"> -->
+
+                        <div class="custom-tag-pill shadow-sm">có màu <span class="tag-count">242</span></div>
+                        <div class="custom-tag-pill shadow-sm">manga <span class="tag-count">1839</span></div>
+                        <div class="custom-tag-pill shadow-sm">manhua <span class="tag-count">33</span></div>
+                        <div class="custom-tag-pill shadow-sm">manhwa <span class="tag-count">71</span></div>
+                        <div class="custom-tag-pill shadow-sm">oneshot <span class="tag-count">716</span></div>
+                        <div class="custom-tag-pill shadow-sm">tạm ngưng <span class="tag-count">48</span></div>
+                        <div class="custom-tag-pill shadow-sm">webtoon <span class="tag-count">79</span></div>
+                        <div class="custom-tag-pill shadow-sm">đang tiến hành <span class="tag-count">892</span></div>
+                        <div class="custom-tag-pill shadow-sm">đã hoàn thành <span class="tag-count">473</span></div>
+                        <div class="custom-tag-pill shadow-sm">comedy <span class="tag-count">1209</span></div>
+                        <div class="custom-tag-pill shadow-sm">romance <span class="tag-count">1078</span></div>
+                        <div class="custom-tag-pill shadow-sm">drama <span class="tag-count">944</span></div>
+                        <div class="custom-tag-pill shadow-sm">slice of life <span class="tag-count">902</span></div>
+                        <div class="custom-tag-pill shadow-sm">hài hước <span class="tag-count">867</span></div>
+                        <div class="custom-tag-pill shadow-sm">đời thường <span class="tag-count">793</span></div>
+                        <div class="custom-tag-pill shadow-sm">fantasy <span class="tag-count">686</span></div>
+                        <div class="custom-tag-pill shadow-sm">romcom <span class="tag-count">645</span></div>
+                        <div class="custom-tag-pill shadow-sm">lãng mạn <span class="tag-count">640</span></div>
+                        <div class="custom-tag-pill shadow-sm">học đường <span class="tag-count">550</span></div>
+                        <div class="custom-tag-pill shadow-sm">school life <span class="tag-count">452</span></div>
+                        <div class="custom-tag-pill shadow-sm">hành động <span class="tag-count">435</span></div>
+                        <div class="custom-tag-pill shadow-sm">shounen <span class="tag-count">401</span></div>
+                        <div class="custom-tag-pill shadow-sm">siêu nhiên <span class="tag-count">392</span></div>
+                        <div class="custom-tag-pill shadow-sm">action <span class="tag-count">389</span></div>
+                        <div class="custom-tag-pill shadow-sm">supernatural <span class="tag-count">386</span></div>
+                        <div class="custom-tag-pill shadow-sm">seinen <span class="tag-count">362</span></div>
+                        <div class="custom-tag-pill shadow-sm">tâm lý <span class="tag-count">291</span></div>
+
+                    </div>
+                </div>
+
+                <!-- Nút Submit -->
+                <button type="button" class="btn w-100 rounded-3 shadow-sm search-page-btn mt-2">TÌM KIẾM</button>
+            </form>
+
+        </div>
+
+        <!-- Floating Chat Button-->
+        <a href="#" class="floating-chat-btn">
+            <i class="fa-brands fa-facebook-messenger"></i>
+        </a>
+
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>
