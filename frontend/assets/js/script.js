@@ -321,25 +321,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let typingTimer;
         if (liveSearchInput) {
+            liveSearchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const query = liveSearchInput.value.trim();
+                    if (query) {
+                        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            });
+
             liveSearchInput.addEventListener('input', (e) => {
                 const val = e.target.value.trim();
                 clearTimeout(typingTimer);
-                if (val.length > 1) {
+                
+                if (val.length >= 1) {
                     typingTimer = setTimeout(async () => {
                         try {
-                            const allMangas = await ApiService.getMangas();
-                            const matches = allMangas.filter(m => m.title.toLowerCase().includes(val.toLowerCase())).slice(0, 5);
+                            const response = await ApiService.searchMangas(val, 0, 10);
+                            const matches = response.content || [];
 
                             if (searchResultList) {
-                                searchResultList.innerHTML = matches.map(m => `
-                                    <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3">
-                                         <img src="${getImageUrl(m.coverUrl)}" alt="Cover" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px;">
-                                         <div>
-                                             <h6 class="mb-1 fw-bold text-dark">${m.title}</h6>
-                                             <small class="text-muted">${m.authors && m.authors.length > 0 ? m.authors.map(a => a.name).join(', ') : 'Tác giả ẩn danh'}</small>
-                                         </div>
-                                     </a>
-                                `).join('');
+                                if (matches.length > 0) {
+                                    searchResultList.innerHTML = matches.map(m => `
+                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3">
+                                             <img src="${getImageUrl(m.coverUrl)}" alt="Cover" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px;">
+                                             <div>
+                                                 <h6 class="mb-1 fw-bold text-dark">${m.title}</h6>
+                                                 <small class="text-muted">${m.seriesType || 'Manga'}</small>
+                                             </div>
+                                         </a>
+                                    `).join('');
+                                } else {
+                                    searchResultList.innerHTML = `<div class="p-3 text-center text-muted">Không tìm thấy kết quả nào cho "${val}"</div>`;
+                                }
                                 searchResults.classList.remove('d-none');
                             }
                         } catch (err) { console.error(err); }

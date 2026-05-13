@@ -44,6 +44,14 @@ public class MangaController {
         return ResponseEntity.ok(mangaService.getAllMangaForAdmin(page, size));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<Series>> search(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(mangaService.searchManga(q, page, size));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Series> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(mangaService.getMangaById(id));

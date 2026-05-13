@@ -65,6 +65,10 @@ const ApiService = {
         return response.content !== undefined ? response.content : response;
     },
 
+    async searchMangas(query, page = 0, size = 20) {
+        return this.fetchWithTimeout(`/manga/search?q=${encodeURIComponent(query)}&page=${page}&size=${size}`);
+    },
+
     async getAllMangas(page = 0, size = 20) {
         return this.fetchWithTimeout(`/manga?page=${page}&size=${size}`);
     },

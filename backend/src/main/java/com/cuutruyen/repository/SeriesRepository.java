@@ -15,4 +15,8 @@ public interface SeriesRepository extends JpaRepository<Series, Integer> {
     List<Series> findByTranslationGroup_GroupId(Integer groupId);
     List<Series> findByTranslationGroup_GroupIdAndApprovalStatus(Integer groupId, Series.ApprovalStatus status);
     boolean existsByTitle(String title);
+
+    // Search methods
+    Page<Series> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    Page<Series> findByTitleContainingIgnoreCaseAndApprovalStatus(String title, Series.ApprovalStatus status, Pageable pageable);
 }

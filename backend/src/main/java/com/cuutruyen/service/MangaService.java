@@ -56,11 +56,17 @@ public class MangaService {
     }
 
     public Page<Series> getAllManga(int page, int size) {
-        return seriesRepository.findByApprovalStatus(Series.ApprovalStatus.approved, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return seriesRepository.findByApprovalStatus(Series.ApprovalStatus.approved,
+                PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 
     public Page<Series> getAllMangaForAdmin(int page, int size) {
         return seriesRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+    }
+
+    public Page<Series> searchManga(String query, int page, int size) {
+        return seriesRepository.findByTitleContainingIgnoreCaseAndApprovalStatus(
+                query, Series.ApprovalStatus.approved, PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 
     public Series getMangaById(Integer id) {
@@ -90,7 +96,7 @@ public class MangaService {
             series.setSeriesType(Series.SeriesType.manga);
         }
         series.setUploadedBy(uploader);
-        
+
         // Find group of uploader
         if (uploader != null) {
             List<TranslationGroup> groups = translationGroupRepository.findByLeader_UserId(uploader.getUserId());
@@ -100,10 +106,10 @@ public class MangaService {
                 translationGroupRepository.findById(uploader.getGroupId()).ifPresent(series::setTranslationGroup);
             }
         }
-        
+
         // Tất cả truyện đăng lên đều phải qua bước duyệt (pending)
         series.setApprovalStatus(Series.ApprovalStatus.pending);
-        
+
         series.setCreatedAt(LocalDateTime.now());
         series.setUpdatedAt(LocalDateTime.now());
 
@@ -139,7 +145,7 @@ public class MangaService {
         // Save file
         Path filePath = Paths.get(UPLOAD_DIR, "covers", uniqueFileName).toAbsolutePath();
         log.info("Saving cover to: {}", filePath);
-        
+
         try (var inputStream = file.getInputStream()) {
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
@@ -150,8 +156,9 @@ public class MangaService {
 
     public Series toggleFavorite(Integer id, boolean isFollowing) {
         Series series = getMangaById(id);
-        if (series.getTotalFavorites() == null) series.setTotalFavorites(0);
-        
+        if (series.getTotalFavorites() == null)
+            series.setTotalFavorites(0);
+
         if (isFollowing) {
             series.setTotalFavorites(series.getTotalFavorites() + 1);
         } else {
@@ -162,15 +169,19 @@ public class MangaService {
 
     public Series rateManga(Integer id, int rating) {
         Series series = getMangaById(id);
-        if (series.getTotalRatings() == null) series.setTotalRatings(0);
-        if (series.getAverageRating() == null) series.setAverageRating(java.math.BigDecimal.ZERO);
+        if (series.getTotalRatings() == null)
+            series.setTotalRatings(0);
+        if (series.getAverageRating() == null)
+            series.setAverageRating(java.math.BigDecimal.ZERO);
 
         int currentCount = series.getTotalRatings();
         java.math.BigDecimal currentAvg = series.getAverageRating();
 
-        java.math.BigDecimal newTotal = currentAvg.multiply(new java.math.BigDecimal(currentCount)).add(new java.math.BigDecimal(rating));
+        java.math.BigDecimal newTotal = currentAvg.multiply(new java.math.BigDecimal(currentCount))
+                .add(new java.math.BigDecimal(rating));
         int newCount = currentCount + 1;
-        java.math.BigDecimal newAvg = newTotal.divide(new java.math.BigDecimal(newCount), 1, java.math.RoundingMode.HALF_UP);
+        java.math.BigDecimal newAvg = newTotal.divide(new java.math.BigDecimal(newCount), 1,
+                java.math.RoundingMode.HALF_UP);
 
         series.setTotalRatings(newCount);
         series.setAverageRating(newAvg);
@@ -183,16 +194,19 @@ public class MangaService {
     }
 
     public Series updateSeries(Integer id, String title, String alternativeTitle, String description, String seriesType,
-                               String status, MultipartFile coverFile, User currentUser) {
+            String status, MultipartFile coverFile, User currentUser) {
         Series series = getMangaById(id);
 
-        // Kiểm tra quyền: Admin hoặc Uploader gốc hoặc (Cùng nhóm dịch AND (Leader/Member))
+        // Kiểm tra quyền: Admin hoặc Uploader gốc hoặc (Cùng nhóm dịch AND
+        // (Leader/Member))
         boolean isAdmin = currentUser.getRole() != null && currentUser.getRole().name().equalsIgnoreCase("admin");
-        boolean isOriginalUploader = series.getUploadedBy() != null && series.getUploadedBy().getUserId().equals(currentUser.getUserId());
-        boolean isLeader = series.getTranslationGroup() != null && series.getTranslationGroup().getLeader().getUserId().equals(currentUser.getUserId());
+        boolean isOriginalUploader = series.getUploadedBy() != null
+                && series.getUploadedBy().getUserId().equals(currentUser.getUserId());
+        boolean isLeader = series.getTranslationGroup() != null
+                && series.getTranslationGroup().getLeader().getUserId().equals(currentUser.getUserId());
         boolean isMemberOfSameGroup = series.getTranslationGroup() != null && currentUser.getGroupId() != null &&
-                                     currentUser.getGroupId().equals(series.getTranslationGroup().getGroupId());
-        
+                currentUser.getGroupId().equals(series.getTranslationGroup().getGroupId());
+
         if (!isAdmin && !isOriginalUploader && !isLeader && !isMemberOfSameGroup) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa truyện này!");
         }
@@ -255,16 +269,16 @@ public class MangaService {
             var pages = pageRepository.findByChapterChapterIdOrderByPageNumberAsc(chapter.getChapterId());
             pageRepository.deleteAll(pages);
         }
-        
+
         // 2. Delete series-level related records
         commentRepository.deleteAll(commentRepository.findBySeriesSeriesId(id));
         favoriteRepository.deleteAll(favoriteRepository.findBySeriesId(id));
         ratingRepository.deleteAll(ratingRepository.findBySeriesId(id));
         readingProgressRepository.deleteAll(readingProgressRepository.findBySeriesId(id));
-        
+
         // 3. Delete all chapters
         chapterRepository.deleteAll(chapters);
-        
+
         // 4. Delete the series
         seriesRepository.deleteById(id);
     }
