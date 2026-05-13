@@ -3,14 +3,14 @@
  * Handles all network requests to the Backend API
  */
 const API_CONFIG = {
-    BASE_URL: "http://localhost:8080/api", // Default Spring Boot port
+    BASE_URL: "http://localhost:8080", // Default Spring Boot port
     TIMEOUT: 5000
 };
 
 // Helper function to construct image URLs
 window.getImageUrl = (coverUrl) => {
     if (!coverUrl) return null;
-    
+
     // Explicitly block placeholder/mock URLs
     if (coverUrl.includes('placehold.co') || coverUrl.includes('placeholder')) {
         return null;
@@ -18,7 +18,7 @@ window.getImageUrl = (coverUrl) => {
 
     // If it's already a full URL, return as-is
     if (coverUrl.startsWith('http')) return coverUrl;
-    
+
     const serverUrl = API_CONFIG.BASE_URL.replace('/api', '');
     // If it's a relative path starting with /, prepend server URL
     if (coverUrl.startsWith('/')) {
