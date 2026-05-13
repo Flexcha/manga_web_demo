@@ -126,12 +126,19 @@
         </div>
     </main>
 
-    <!-- Search Overlay -->
     <div id="searchOverlay" class="search-overlay d-none">
         <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
-            <div class="position-relative">
+            <div class="position-relative d-flex align-items-center">
                 <input type="text" id="liveSearchInput"
-                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm" placeholder="Tìm kiếm...">
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm pe-5" placeholder="Tìm kiếm...">
+                <button id="btnFullSearch" class="btn position-absolute end-0 me-2 text-secondary border-0 fs-4">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <div id="searchResults" class="search-results-container mt-2 d-none w-100" style="position: absolute; top: 100%; left: 0;">
+                    <div id="searchResultList" class="list-group shadow-sm border-0">
+                        <!-- Live search results injected by JS -->
+                    </div>
+                </div>
             </div>
         </div>
         <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i

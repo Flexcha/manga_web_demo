@@ -330,6 +330,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            const btnFullSearch = document.getElementById('btnFullSearch');
+            if (btnFullSearch) {
+                btnFullSearch.addEventListener('click', () => {
+                    const query = liveSearchInput.value.trim();
+                    if (query) {
+                        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                    }
+                });
+            }
+
             liveSearchInput.addEventListener('input', (e) => {
                 const val = e.target.value.trim();
                 clearTimeout(typingTimer);
