@@ -15,23 +15,21 @@ import com.cuutruyen.repository.PurchasedChapterRepository;
 import com.cuutruyen.entity.Chapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.StandardCopyOption;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -48,8 +46,6 @@ public class MangaService {
     private final ReadingProgressRepository readingProgressRepository;
     private final PurchasedChapterRepository purchasedChapterRepository;
     private static final String UPLOAD_DIR = "uploads";
-    private static final long MAX_COVER_SIZE = 10 * 1024 * 1024;
-    private static final Set<String> ALLOWED_COVER_CONTENT_TYPES = Set.of("image/jpeg", "image/png", "image/webp", "image/gif");
 
     public List<Series> getLatestManga(int limit) {
         return seriesRepository.findAll(PageRequest.of(0, limit, Sort.by("createdAt").descending())).getContent();
@@ -117,7 +113,7 @@ public class MangaService {
                 String coverUrl = uploadCoverImage(coverFile);
                 series.setCoverUrl(coverUrl);
             } catch (IOException e) {
-                throw new IllegalStateException("Không thể lưu ảnh bìa. Vui lòng kiểm tra thư mục uploads/covers.", e);
+                throw new RuntimeException("Failed to upload cover image: " + e.getMessage(), e);
             }
         }
 
@@ -125,44 +121,31 @@ public class MangaService {
     }
 
     private String uploadCoverImage(MultipartFile file) throws IOException {
-        if (file.getSize() > MAX_COVER_SIZE) {
-            throw new IllegalArgumentException("Ảnh bìa không được vượt quá 10MB.");
+        // Create uploads directory if it doesn't exist
+        File uploadsDir = new File(UPLOAD_DIR, "covers");
+        if (!uploadsDir.exists()) {
+            log.info("Creating directory: {}", uploadsDir.getAbsolutePath());
+            uploadsDir.mkdirs();
         }
 
-        String contentType = normalizeContentType(file.getContentType());
-        if (!ALLOWED_COVER_CONTENT_TYPES.contains(contentType)) {
-            throw new IllegalArgumentException("Ảnh bìa chỉ hỗ trợ JPG, PNG, WEBP hoặc GIF.");
+        // Generate unique filename
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName == null || !originalFileName.contains(".")) {
+            originalFileName = "cover.jpg";
         }
-
-        Path coversDir = Paths.get(UPLOAD_DIR, "covers").toAbsolutePath().normalize();
-        Files.createDirectories(coversDir);
-
-        String fileExtension = extensionFromContentType(contentType);
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
         String uniqueFileName = UUID.randomUUID() + fileExtension;
-        Path filePath = coversDir.resolve(uniqueFileName).normalize();
+
+        // Save file
+        Path filePath = Paths.get(UPLOAD_DIR, "covers", uniqueFileName).toAbsolutePath();
         log.info("Saving cover to: {}", filePath);
         
         try (var inputStream = file.getInputStream()) {
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
 
+        // Return relative path for database
         return "/uploads/covers/" + uniqueFileName;
-    }
-
-    private String normalizeContentType(String contentType) {
-        if (contentType == null) {
-            return "";
-        }
-        return contentType.toLowerCase(Locale.ROOT).split(";", 2)[0].trim();
-    }
-
-    private String extensionFromContentType(String contentType) {
-        return switch (contentType) {
-            case "image/png" -> ".png";
-            case "image/webp" -> ".webp";
-            case "image/gif" -> ".gif";
-            default -> ".jpg";
-        };
     }
 
     public Series toggleFavorite(Integer id, boolean isFollowing) {
@@ -202,31 +185,23 @@ public class MangaService {
     public Series updateSeries(Integer id, String title, String alternativeTitle, String description, String seriesType,
                                String status, MultipartFile coverFile, User currentUser) {
         Series series = getMangaById(id);
-        if (currentUser == null) {
-            throw new AccessDeniedException("Bạn cần đăng nhập để chỉnh sửa truyện.");
-        }
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Tên truyện không được để trống.");
-        }
 
         // Kiểm tra quyền: Admin hoặc Uploader gốc hoặc (Cùng nhóm dịch AND (Leader/Member))
         boolean isAdmin = currentUser.getRole() != null && currentUser.getRole().name().equalsIgnoreCase("admin");
         boolean isOriginalUploader = series.getUploadedBy() != null && series.getUploadedBy().getUserId().equals(currentUser.getUserId());
-        boolean isLeader = series.getTranslationGroup() != null && series.getTranslationGroup().getLeader() != null &&
-                           series.getTranslationGroup().getLeader().getUserId().equals(currentUser.getUserId());
+        boolean isLeader = series.getTranslationGroup() != null && series.getTranslationGroup().getLeader().getUserId().equals(currentUser.getUserId());
         boolean isMemberOfSameGroup = series.getTranslationGroup() != null && currentUser.getGroupId() != null &&
                                      currentUser.getGroupId().equals(series.getTranslationGroup().getGroupId());
         
         if (!isAdmin && !isOriginalUploader && !isLeader && !isMemberOfSameGroup) {
-            throw new AccessDeniedException("Bạn không có quyền chỉnh sửa truyện này!");
+            throw new RuntimeException("Bạn không có quyền chỉnh sửa truyện này!");
         }
 
-        String normalizedTitle = title.trim();
-        if (!normalizedTitle.equals(series.getTitle()) && seriesRepository.existsByTitle(normalizedTitle)) {
-            throw new IllegalArgumentException("Tên truyện '" + normalizedTitle + "' đã tồn tại trên hệ thống!");
+        if (!series.getTitle().equals(title) && seriesRepository.existsByTitle(title)) {
+            throw new RuntimeException("Tên truyện '" + title + "' đã tồn tại trên hệ thống!");
         }
 
-        series.setTitle(normalizedTitle);
+        series.setTitle(title);
         series.setAlternativeTitle(alternativeTitle);
         series.setDescription(description);
         if (seriesType != null && !seriesType.trim().isEmpty()) {
@@ -250,7 +225,7 @@ public class MangaService {
                 String coverUrl = uploadCoverImage(coverFile);
                 series.setCoverUrl(coverUrl);
             } catch (IOException e) {
-                throw new IllegalStateException("Không thể lưu ảnh bìa. Vui lòng kiểm tra thư mục uploads/covers.", e);
+                throw new RuntimeException("Failed to update cover image: " + e.getMessage(), e);
             }
         }
 
