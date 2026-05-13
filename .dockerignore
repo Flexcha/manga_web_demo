@@ -1,0 +1,13 @@
+.git
+.gitignore
+.idea
+.vscode
+.DS_Store
+frontend
+image
+uploads
+backend/uploads
+backend/target
+backend/run.log
+*.md
+*.sql
