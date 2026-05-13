@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/manga")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class MangaController {
     private final MangaService mangaService;
     private final UserRepository userRepository;

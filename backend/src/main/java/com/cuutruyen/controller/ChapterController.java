@@ -16,7 +16,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/chapter")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ChapterController {
     private final ChapterService chapterService;
     private final UserRepository userRepository;
