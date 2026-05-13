@@ -18,7 +18,7 @@ public class CorsConfig {
                         .allowedOrigins(
                                 "http://localhost:63342",
                                 "http://127.0.0.1:5500",
-                                "https://TEN-FRONTEND.vercel.app"
+                                "https://demonmcnpm.vercel.app/"
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")
