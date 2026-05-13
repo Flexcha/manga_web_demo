@@ -65,7 +65,7 @@ public class MangaService {
     }
 
     public Page<Series> searchManga(String query, int page, int size) {
-        return seriesRepository.findByTitleContainingIgnoreCaseAndApprovalStatus(
+        return seriesRepository.searchByTitle(
                 query, Series.ApprovalStatus.approved, PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 

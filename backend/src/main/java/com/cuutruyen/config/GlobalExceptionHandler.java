@@ -10,10 +10,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
-        e.printStackTrace(); // Still log to console for Render logs
+        e.printStackTrace();
+        String message = e.getMessage();
+        if (message == null || message.isEmpty()) {
+            message = e.toString();
+        }
         return ResponseEntity.status(500).body(Map.of(
             "error", "Internal Server Error",
-            "message", e.getMessage(),
+            "message", message,
             "type", e.getClass().getName()
         ));
     }

@@ -17,6 +17,6 @@ public interface SeriesRepository extends JpaRepository<Series, Integer> {
     boolean existsByTitle(String title);
 
     // Search methods
-    Page<Series> findByTitleContainingIgnoreCase(String title, Pageable pageable);
-    Page<Series> findByTitleContainingIgnoreCaseAndApprovalStatus(String title, Series.ApprovalStatus status, Pageable pageable);
+    @org.springframework.data.jpa.repository.Query("SELECT s FROM Series s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND s.approvalStatus = :status")
+    Page<Series> searchByTitle(String title, Series.ApprovalStatus status, org.springframework.data.domain.Pageable pageable);
 }
