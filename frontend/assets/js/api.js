@@ -30,6 +30,18 @@ window.getImageUrl = (coverUrl) => {
 
 const getImageUrl = window.getImageUrl;
 
+async function getApiErrorMessage(response, fallback = `HTTP error! status: ${response.status}`) {
+    const text = await response.text();
+    if (!text) return fallback;
+
+    try {
+        const data = JSON.parse(text);
+        return data.message || data.error || fallback;
+    } catch (error) {
+        return text || fallback;
+    }
+}
+
 const ApiService = {
     async fetchWithTimeout(resource, options = {}) {
         const { timeout = API_CONFIG.TIMEOUT } = options;
@@ -49,7 +61,7 @@ const ApiService = {
                 signal: controller.signal
             });
             clearTimeout(id);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) throw new Error(await getApiErrorMessage(response));
             const text = await response.text();
             return text ? JSON.parse(text) : null;
         } catch (error) {
@@ -136,7 +148,7 @@ const ApiService = {
             body: formData
         });
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(await getApiErrorMessage(response));
         return await response.json();
     },
 
@@ -160,7 +172,7 @@ const ApiService = {
             body: formData
         });
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(await getApiErrorMessage(response));
         return await response.json();
     },
 
@@ -197,7 +209,7 @@ const ApiService = {
             body: formData
         });
 
-        if (!response.ok) throw new Error(`Upload failed! status: ${response.status}`);
+        if (!response.ok) throw new Error(await getApiErrorMessage(response, `Upload failed! status: ${response.status}`));
         return true;
     },
 
