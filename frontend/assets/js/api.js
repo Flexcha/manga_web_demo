@@ -3,7 +3,7 @@
  * Handles all network requests to the Backend API
  */
 const API_CONFIG = {
-    BASE_URL: "http://localhost:8080", // Default Spring Boot port
+    BASE_URL: "https://demo-nmcnpm.onrender.com/", // Default Spring Boot port
     TIMEOUT: 5000
 };
 
