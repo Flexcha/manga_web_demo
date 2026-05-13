@@ -22,6 +22,7 @@
 /Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/entity/Notification.java
 /Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/controller/MeController.java
 /Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/entity/User.java
+/Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/controller/ApiExceptionHandler.java
 /Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/entity/Rating.java
 /Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/service/AuthService.java
 /Users/admin/Library/CloudStorage/OneDrive-Personal/manga_web_demo_vibe_code/backend/src/main/java/com/cuutruyen/entity/TranslationGroup.java
