@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
             background-color: var(--primary-bg);
@@ -116,7 +116,7 @@
 
                 <!-- Logo Center -->
                 <div class="col-2 text-center">
-                    <a href="index.html"
+                    <a href="../index.html"
                         class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
                         Cứu Truyện
                     </a>
@@ -149,7 +149,6 @@
                                         dõi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
                                 </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
                                         href="dang-truyen.html">Đăng truyện</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
@@ -177,7 +176,7 @@
                         <p class="text-secondary mb-0" id="groupSubtitle">Quản lý thành viên và truyện của nhóm</p>
                     </div>
                 </div>
-                <button class="btn btn-dark fw-bold px-4 py-2 rounded-3" data-bs-toggle="modal"
+                <button id="btnAddMemberMain" class="btn btn-dark fw-bold px-4 py-2 rounded-3 d-none" data-bs-toggle="modal"
                     data-bs-target="#addMemberModal"><i class="fa-solid fa-user-plus me-2"></i> Thêm thành viên</button>
             </div>
 
@@ -196,12 +195,6 @@
                         <button class="nav-link" id="approval-tab" data-bs-toggle="tab" data-bs-target="#approval"
                             type="button" role="tab">Duyệt truyện <span class="badge rounded-pill bg-danger ms-1"
                                 id="pendingBadge">0</span></button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="withdrawal-tab" data-bs-toggle="tab" data-bs-target="#withdrawal"
-                            type="button" role="tab"><i class="fa-solid fa-money-bill-transfer me-1"></i>Rút
-                            tiền</button>
-                    </li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -265,54 +258,6 @@
                                     <!-- JS sẽ render dữ liệu thực từ DB -->
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-
-                    <!-- Tab Rút Tiền -->
-                    <div class="tab-pane fade p-4" id="withdrawal" role="tabpanel" tabindex="0">
-                        <div class="row g-4">
-                            <div class="col-md-5">
-                                <div class="card border-0 shadow-sm rounded-4 p-4">
-                                    <h5 class="fw-bold mb-3"><i class="fa-solid fa-vault me-2 text-warning"></i>Quỹ nhóm
-                                        dịch</h5>
-                                    <div class="display-5 fw-bold text-success mb-2" id="walletBalance">0</div>
-                                    <p class="text-muted small">Xu nhóm (thu từ mở khoá chapter)</p>
-                                    <hr>
-                                    <h6 class="fw-bold mb-3">Gửi yêu cầu rút tiền</h6>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary">SỐ TIỀN RÚT (XU)</label>
-                                        <input type="number" class="form-control border-2" id="withdrawAmount"
-                                            placeholder="Nhập số Xu muốn rút" min="1">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold text-secondary">GHI CHÚ</label>
-                                        <input type="text" class="form-control border-2" id="withdrawNote"
-                                            placeholder="VD: Rút về ngân hàng Vietcombank">
-                                    </div>
-                                    <button class="btn btn-dark fw-bold w-100 py-2" id="btnSubmitWithdraw"><i
-                                            class="fa-solid fa-paper-plane me-2"></i>Gửi yêu cầu rút tiền</button>
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <h6 class="fw-bold mb-3"><i
-                                        class="fa-solid fa-clock-rotate-left me-2 text-muted"></i>Lịch sử rút tiền</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-custom mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Thời gian</th>
-                                                <th>Số tiền</th>
-                                                <th>Ghi chú</th>
-                                                <th class="text-end">Trạng thái</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="withdrawHistoryTbody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -337,7 +282,6 @@
                         <label class="form-label text-secondary small fw-bold">VAI TRÒ TRONG NHÓM</label>
                         <select class="form-select border-2" id="newMemberRole">
                             <option value="2">Dịch giả</option>
-                            <option value="3">Editor</option>
                             <option value="4">Uploader</option>
                         </select>
                     </div>
@@ -365,7 +309,6 @@
                         <select class="form-select border-2">
                             <option value="1">Trưởng nhóm</option>
                             <option value="2">Dịch giả</option>
-                            <option value="3">Editor</option>
                             <option value="4">Uploader</option>
                         </select>
                     </div>
@@ -437,6 +380,35 @@
         </div>
     </div>
 
+    <!-- Modal Sửa Vai Trò -->
+    <div class="modal fade" id="editRoleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-warning text-white border-0">
+                    <h5 class="modal-title fw-bold">Sửa Vai Trò Thành Viên</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small text-uppercase">Thành viên</label>
+                        <input type="text" id="editRoleUserName" class="form-control bg-light fw-bold" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary small text-uppercase">Chọn vai trò mới</label>
+                        <select id="editRoleSelect" class="form-select border-2">
+                            <option value="translator">Dịch giả</option>
+                            <option value="uploader">Uploader</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">HỦY</button>
+                    <button type="button" id="btnConfirmEditRole" class="btn btn-warning fw-bold text-white px-4">LƯU THAY ĐỔI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Search Overlay -->
     <div id="searchOverlay" class="search-overlay d-none">
         <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
@@ -464,8 +436,8 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const formatDate = (iso) => {
@@ -482,97 +454,142 @@
             // ==== LOAD NHÓM CỦA USER HOẶC THEO PARAM ====
             const urlParams = new URLSearchParams(window.location.search);
             const viewGroupId = urlParams.get('groupId');
-            const groupTitle = document.getElementById('groupTitle');
-            const groupAvatar = document.getElementById('groupAvatar');
-            const groupSubtitle = document.getElementById('groupSubtitle');
             let currentGroup = null;
+            let myGroupId = null;
 
-            try {
-                if (viewGroupId) {
-                    currentGroup = await ApiService.getGroupInfo(viewGroupId);
-                } else {
-                    currentGroup = await ApiService.getMyGroup();
-                }
+            window.loadGroupData = async () => {
+                const groupTitle = document.getElementById('groupTitle');
+                const groupAvatar = document.getElementById('groupAvatar');
+                const groupSubtitle = document.getElementById('groupSubtitle');
 
-                if (currentGroup && currentGroup.name) {
-                    groupTitle.textContent = 'Nhóm Dịch: ' + currentGroup.name;
-                    groupAvatar.textContent = currentGroup.name.charAt(0).toUpperCase();
-                    groupSubtitle.textContent = `Trưởng nhóm: ${currentGroup.leader ? currentGroup.leader.username : 'N/A'} • Trạng thái: ${currentGroup.status}`;
-                    
-                    // Render thành viên nhóm (hiện tại chỉ có leader)
-                    const membersTbody = document.getElementById('membersTbody');
-                    if (membersTbody && currentGroup.leader) {
-                        const leader = currentGroup.leader;
-                        const initial = leader.username.charAt(0).toUpperCase();
-                        const joinDate = currentGroup.createdAt ? new Date(currentGroup.createdAt).toLocaleDateString('vi-VN') : 'N/A';
-                        membersTbody.innerHTML = `
-                            <tr>
-                                <td>1</td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="btn-circular bg-primary text-white" style="width: 32px; height: 32px; font-size: 0.8rem;">${initial}</div>
-                                        <span class="fw-bold fs-6">${leader.displayName || leader.username}</span>
-                                    </div>
-                                </td>
-                                <td><span class="badge bg-danger">Trưởng nhóm</span></td>
-                                <td>${joinDate}</td>
-                                <td class="text-end"><span class="text-muted small">—</span></td>
-                            </tr>
-                        `;
-                    }
-                } else {
-                    groupTitle.textContent = 'Chưa có nhóm dịch';
-                    groupAvatar.textContent = '?';
-                    groupSubtitle.textContent = 'Bạn chưa tạo hoặc chưa được duyệt nhóm dịch nào';
-                    const membersTbody = document.getElementById('membersTbody');
-                    if (membersTbody) membersTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có thành viên</td></tr>';
-                }
-            } catch (err) {
-                console.error('Lỗi load nhóm:', err);
-                groupTitle.textContent = 'Lỗi tải nhóm';
-            }
-
-            // Gán global nếu cần dùng chỗ khác
-            const myGroup = currentGroup; 
-            if (!myGroup) return; // Dừng nếu không có dữ liệu nhóm
-            const myGroupId = myGroup.groupId;
-
-            const tableBody = document.getElementById('mangaGroupTableBody');
-            if (tableBody) {
                 try {
-                    const mangas = await ApiService.getMangasByGroup(myGroup.groupId);
-                    const approvedMangas = mangas.filter(m => !m.approvalStatus || m.approvalStatus === 'approved');
-                    if (approvedMangas.length > 0) {
-                        tableBody.innerHTML = approvedMangas.map((m, idx) => `
-                            <tr>
-                                <td>${idx + 1}</td>
-                                <td>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="${getImageUrl(m.coverUrl) || ''}" width="40" height="56" alt="cover" class="rounded border object-fit-cover" style="background-color: #f0f0f0;">
-                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="fw-bold text-dark text-decoration-none">${m.title}</a>
-                                    </div>
-                                </td>
-                                <td>${m.status || 'ongoing'}</td>
-                                <td class="small text-muted">${formatDate(m.updatedAt)}</td>
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end align-items-center gap-2">
-                                        <a href="dang-truyen.html?edit=${m.seriesId}" class="btn btn-sm btn-outline-primary fw-bold px-3"><i class="fa-solid fa-pen me-1"></i>Sửa</a>
-                                        <button class="btn btn-sm btn-outline-danger fw-bold px-3 btn-delete-manga" data-id="${m.seriesId}"><i class="fa-solid fa-trash me-1"></i>Xóa</button>
-                                        <button class="btn btn-sm btn-dark fw-bold px-3 btn-post-chap" data-id="${m.seriesId}">Đăng Chap</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `).join('');
+                    if (viewGroupId) {
+                        currentGroup = await ApiService.getGroupInfo(viewGroupId);
                     } else {
-                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Chưa có truyện nào đã duyệt</td></tr>';
+                        currentGroup = await ApiService.getMyGroup();
                     }
-                } catch (error) {
-                    console.error("Failed to load mangas", error);
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi khi tải dữ liệu!</td></tr>';
+
+                    if (currentGroup && currentGroup.name) {
+                        myGroupId = currentGroup.groupId;
+                        groupTitle.textContent = 'Nhóm Dịch: ' + currentGroup.name;
+                        groupAvatar.textContent = currentGroup.name.charAt(0).toUpperCase();
+                        groupSubtitle.textContent = `Trưởng nhóm: ${currentGroup.leader ? currentGroup.leader.username : 'N/A'} • Trạng thái: ${currentGroup.status}`;
+                        
+                        // Render thành viên nhóm
+                        const membersTbody = document.getElementById('membersTbody');
+                        if (membersTbody && currentGroup.groupId) {
+                            try {
+                                const membersList = await ApiService.getGroupMembers(currentGroup.groupId);
+                                
+                                // Kiểm tra quyền của user đang đăng nhập
+                                const loggedInUser = JSON.parse(localStorage.getItem('user'));
+                                const isCurrentUserLeader = currentGroup.leader && loggedInUser && currentGroup.leader.username === loggedInUser.username;
+                                const isCurrentUserAdmin = loggedInUser && loggedInUser.role === 'admin';
+                                const canManageMembers = isCurrentUserLeader || isCurrentUserAdmin;
+
+                                // Hiện/ẩn nút thêm thành viên
+                                const btnAddMemberMain = document.getElementById('btnAddMemberMain');
+                                if (btnAddMemberMain) {
+                                    if (canManageMembers) btnAddMemberMain.classList.remove('d-none');
+                                    else btnAddMemberMain.classList.add('d-none');
+                                }
+
+                                if (membersList.length > 0) {
+                                    membersTbody.innerHTML = membersList.map((m, index) => {
+                                        const initial = m.username.charAt(0).toUpperCase();
+                                        const isMemberLeader = currentGroup.leader && currentGroup.leader.userId === m.userId;
+                                        
+                                        let roleName = 'Thành viên';
+                                        if (isMemberLeader) roleName = 'Trưởng nhóm';
+                                        else if (m.role === 'translator') roleName = 'Dịch giả';
+                                        else if (m.role === 'uploader') roleName = 'Uploader';
+                                        
+                                        const roleBadge = isMemberLeader ? 'bg-danger' : 'bg-primary';
+                                        const joinDate = formatDate(m.createdAt);
+                                        
+                                        return `
+                                            <tr>
+                                                <td>${index + 1}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="btn-circular bg-primary text-white" style="width: 32px; height: 32px; font-size: 0.8rem;">${initial}</div>
+                                                        <span class="fw-bold fs-6">${m.displayName || m.username}</span>
+                                                    </div>
+                                                </td>
+                                                <td><span class="badge ${roleBadge}">${roleName}</span></td>
+                                                <td class="small text-muted">${joinDate}</td>
+                                                <td class="text-end">
+                                                    ${(isMemberLeader || !canManageMembers) ? '<span class="text-muted small">—</span>' : `
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button class="btn btn-sm btn-outline-warning btn-edit-member" data-id="${m.userId}" data-username="${m.username}" data-role="${m.role}" title="Sửa vai trò"><i class="fa-solid fa-user-pen"></i></button>
+                                                            <button class="btn btn-sm btn-outline-danger btn-delete-member" data-id="${m.userId}" title="Xóa khỏi nhóm"><i class="fa-solid fa-user-minus"></i></button>
+                                                        </div>
+                                                    `}
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('');
+                                } else {
+                                    membersTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có thành viên</td></tr>';
+                                }
+                            } catch (err) {
+                                console.error("Lỗi lấy danh sách thành viên", err);
+                            }
+                        }
+
+                        // Render danh sách truyện
+                        const tableBody = document.getElementById('mangaGroupTableBody');
+                        if (tableBody) {
+                            try {
+                                const mangas = await ApiService.getMangasByGroup(currentGroup.groupId);
+                                const approvedMangas = mangas.filter(m => !m.approvalStatus || m.approvalStatus === 'approved');
+                                if (approvedMangas.length > 0) {
+                                    tableBody.innerHTML = approvedMangas.map((m, idx) => `
+                                        <tr>
+                                            <td>${idx + 1}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <img src="${getImageUrl(m.coverUrl) || ''}" width="40" height="56" alt="cover" class="rounded border object-fit-cover" style="background-color: #f0f0f0;">
+                                                    <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="fw-bold text-dark text-decoration-none">${m.title}</a>
+                                                </div>
+                                            </td>
+                                            <td>${m.status || 'ongoing'}</td>
+                                            <td class="small text-muted">${formatDate(m.updatedAt)}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end align-items-center gap-2">
+                                                    <a href="dang-truyen.html?edit=${m.seriesId}" class="btn btn-sm btn-outline-primary fw-bold px-3"><i class="fa-solid fa-pen me-1"></i>Sửa</a>
+                                                    <button class="btn btn-sm btn-outline-danger fw-bold px-3 btn-delete-manga" data-id="${m.seriesId}"><i class="fa-solid fa-trash me-1"></i>Xóa</button>
+                                                    <button class="btn btn-sm btn-dark fw-bold px-3 btn-post-chap" data-id="${m.seriesId}">Đăng Chap</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('');
+                                } else {
+                                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Chưa có truyện nào đã duyệt</td></tr>';
+                                }
+                            } catch (error) {
+                                console.error("Failed to load mangas", error);
+                                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Lỗi khi tải dữ liệu!</td></tr>';
+                            }
+                        }
+                    } else {
+                        groupTitle.textContent = 'Chưa có nhóm dịch';
+                        groupAvatar.textContent = '?';
+                        groupSubtitle.textContent = 'Bạn chưa tạo hoặc chưa được duyệt nhóm dịch nào';
+                        const membersTbody = document.getElementById('membersTbody');
+                        if (membersTbody) membersTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có thành viên</td></tr>';
+                    }
+                } catch (err) {
+                    console.error('Lỗi load nhóm:', err);
+                    groupTitle.textContent = 'Lỗi tải nhóm';
                 }
-            }
+            };
+
+            // Initial load
+            await loadGroupData();
 
             // Event listener for manga actions in bidding table
+            const tableBody = document.getElementById('mangaGroupTableBody');
             if (tableBody) {
                 tableBody.addEventListener('click', async (e) => {
                     const deleteBtn = e.target.closest('.btn-delete-manga');
@@ -585,7 +602,7 @@
                                 deleteBtn.disabled = true;
                                 await ApiService.deleteManga(id);
                                 alert('Đã xóa truyện thành công!');
-                                location.reload();
+                                loadGroupData();
                             } catch (err) {
                                 alert('Lỗi: ' + err.message);
                                 deleteBtn.disabled = false;
@@ -605,6 +622,11 @@
             const pendingBadge = document.getElementById('pendingBadge');
 
             const loadPendingManga = async () => {
+                if (!myGroup) {
+                    groupApprovalTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Bạn chưa tham gia nhóm dịch nào</td></tr>';
+                    if (pendingBadge) pendingBadge.textContent = '0';
+                    return;
+                }
                 try {
                     const pendingManga = await ApiService.getPendingMangasByGroup(myGroup.groupId);
                     if (pendingBadge) pendingBadge.textContent = pendingManga.length;
@@ -657,89 +679,57 @@
                 }
             });
 
-            // ==== RÚT TIỀN ====
-            const walletBalanceEl = document.getElementById('walletBalance');
-            const withdrawHistoryTbody = document.getElementById('withdrawHistoryTbody');
-            const btnSubmitWithdraw = document.getElementById('btnSubmitWithdraw');
 
-            // Load group balance (quỹ chung nhóm)
-            const loadWallet = async () => {
-                try {
-                    const group = myGroup;
-                    if (walletBalanceEl && group && group.balance !== undefined) {
-                        walletBalanceEl.textContent = (group.balance || 0).toLocaleString() + ' Xu';
-                    } else {
-                        if (walletBalanceEl) walletBalanceEl.textContent = '0 Xu';
-                    }
-                } catch (err) {
-                    if (walletBalanceEl) walletBalanceEl.textContent = '0 Xu';
-                }
-            };
 
-            // Load withdrawal history
-            const loadWithdrawHistory = async () => {
-                try {
-                    const allTx = await ApiService.getAllTransactions();
-                    const user = JSON.parse(localStorage.getItem('user') || '{}');
-                    const withdrawals = allTx.filter(tx =>
-                        tx.wallet && tx.wallet.user && tx.wallet.user.username === user.username &&
-                        (tx.type === 'withdrawal_pending' || tx.type === 'withdrawal_approved' || tx.type === 'withdrawal_rejected')
-                    );
-                    if (withdrawals.length === 0) {
-                        withdrawHistoryTbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">Chưa có lịch sử rút tiền</td></tr>';
-                    } else {
-                        const statusMap = {
-                            withdrawal_pending: '<span class="badge bg-warning">Chờ duyệt</span>',
-                            withdrawal_approved: '<span class="badge bg-success">Đã duyệt</span>',
-                            withdrawal_rejected: '<span class="badge bg-danger">Bị từ chối</span>'
-                        };
-                        withdrawHistoryTbody.innerHTML = withdrawals.map(tx => `
-                            <tr>
-                                <td class="small text-muted">${formatDate(tx.createdAt)}</td>
-                                <td><span class="text-danger fw-bold">${tx.amount.toLocaleString()} Xu</span></td>
-                                <td class="small">${tx.note || ''}</td>
-                                <td class="text-end">${statusMap[tx.type] || tx.type}</td>
-                            </tr>
-                        `).join('');
-                    }
-                } catch (err) {
-                    withdrawHistoryTbody.innerHTML = '<tr><td colspan="4" class="text-danger text-center">Lỗi tải dữ liệu</td></tr>';
-                }
-            };
+            // ==== QUẢN LÝ THÀNH VIÊN ====
+            const membersTbody = document.getElementById('membersTbody');
+            const editRoleModalEl = document.getElementById('editRoleModal');
+            const editRoleModal = editRoleModalEl ? new bootstrap.Modal(editRoleModalEl) : null;
+            let currentEditingMemberId = null;
 
-            await loadWallet();
-            await loadWithdrawHistory();
+            if (membersTbody) {
+                membersTbody.addEventListener('click', async (e) => {
+                    const deleteBtn = e.target.closest('.btn-delete-member');
+                    const editBtn = e.target.closest('.btn-edit-member');
 
-            // Submit withdrawal request
-            if (btnSubmitWithdraw) {
-                btnSubmitWithdraw.addEventListener('click', async () => {
-                    const amount = parseInt(document.getElementById('withdrawAmount').value);
-                    const note = document.getElementById('withdrawNote').value || 'Yêu cầu rút tiền';
-
-                    if (!amount || amount <= 0) {
-                        alert('Vui lòng nhập số tiền hợp lệ!');
-                        return;
+                    if (deleteBtn) {
+                        const userId = deleteBtn.getAttribute('data-id');
+                        if (confirm('Bạn có chắc muốn xóa thành viên này khỏi nhóm?')) {
+                            try {
+                                await ApiService.deleteGroupMember(myGroupId, userId);
+                                alert('Đã xóa thành viên!');
+                                loadGroupData();
+                            } catch (err) {
+                                alert('Lỗi: ' + err.message);
+                            }
+                        }
                     }
 
-                    try {
-                        btnSubmitWithdraw.disabled = true;
-                        btnSubmitWithdraw.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Đang gửi...';
-                        await ApiService.requestWithdrawal(amount, note);
-                        alert('Đã gửi yêu cầu rút tiền! Chờ Admin duyệt.');
-                        document.getElementById('withdrawAmount').value = '';
-                        document.getElementById('withdrawNote').value = '';
-                        await loadWallet();
-                        await loadWithdrawHistory();
-                    } catch (err) {
-                        alert('Lỗi: ' + err.message);
-                    } finally {
-                        btnSubmitWithdraw.disabled = false;
-                        btnSubmitWithdraw.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Gửi yêu cầu rút tiền';
+                    if (editBtn && editRoleModal) {
+                        currentEditingMemberId = editBtn.getAttribute('data-id');
+                        const savedRole = (editBtn.getAttribute('data-role') || 'translator').toLowerCase();
+                        document.getElementById('editRoleUserName').value = editBtn.getAttribute('data-username');
+                        document.getElementById('editRoleSelect').value = savedRole;
+                        editRoleModal.show();
                     }
                 });
             }
 
-            // ==== THÊM THÀNH VIÊN ====
+            const btnConfirmEditRole = document.getElementById('btnConfirmEditRole');
+            if (btnConfirmEditRole) {
+                btnConfirmEditRole.addEventListener('click', async () => {
+                    const newRole = document.getElementById('editRoleSelect').value;
+                    try {
+                        await ApiService.addMemberToGroup(myGroupId, currentEditingMemberId, newRole);
+                        alert('Cập nhật vai trò thành công!');
+                        if (editRoleModal) editRoleModal.hide();
+                        loadGroupData();
+                    } catch (err) {
+                        alert('Lỗi: ' + err.message);
+                    }
+                });
+            }
+
             const btnConfirmAddMember = document.getElementById('btnConfirmAddMember');
             if (btnConfirmAddMember) {
                 btnConfirmAddMember.addEventListener('click', async () => {
@@ -757,14 +747,16 @@
                         if (memberRole === '4') roleStr = 'uploader';
 
                         btnConfirmAddMember.disabled = true;
-                        await ApiService.updateUserRole(memberId, roleStr);
+                        await ApiService.addMemberToGroup(myGroupId, memberId, roleStr);
 
-                        alert(`Đã thêm tài khoản ID: ${memberId} vào nhóm và tự động thăng cấp thành ${roleStr} thành công!`);
+                        alert(`Đã thêm tài khoản ID: ${memberId} vào nhóm thành công!`);
                         document.getElementById('newMemberId').value = '';
 
                         const modalEl = document.getElementById('addMemberModal');
                         const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
                         modal.hide();
+                        
+                        loadGroupData();
                     } catch (error) {
                         alert("Lỗi khi thêm thành viên: " + error.message);
                     } finally {

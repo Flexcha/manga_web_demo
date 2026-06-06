@@ -6,6 +6,7 @@ import com.cuutruyen.repository.ChapterRepository;
 import com.cuutruyen.repository.PageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.cuutruyen.repository.SeriesRepository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class ChapterService {
     private final ChapterRepository chapterRepository;
     private final PageRepository pageRepository;
+    private final SeriesRepository seriesRepository;
     private final FileStorageService fileStorageService;
 
     public Optional<Chapter> getChapter(Integer chapterId) {
@@ -33,6 +35,12 @@ public class ChapterService {
     }
 
     public Chapter createChapter(Chapter chapter) {
+        if (chapter.getSeries() != null && chapter.getSeries().getSeriesId() != null) {
+            seriesRepository.findById(chapter.getSeries().getSeriesId()).ifPresent(series -> {
+                series.setUpdatedAt(java.time.LocalDateTime.now());
+                seriesRepository.save(series);
+            });
+        }
         return chapterRepository.save(chapter);
     }
 

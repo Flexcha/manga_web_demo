@@ -1,0 +1,259 @@
+TÀI LIỆU GIỚI THIỆU PHẦN MỀM VÀ PHÂN TÍCH NGHIỆP VỤ HỆ THỐNG
+TÊN DỰ ÁN: NỀN TẢNG ĐỌC VÀ CHIA SẺ TRUYỆN TRANH CỘNG ĐỒNG "CỨU TRUYỆN"
+ĐỘ DÀI: TƯƠNG ĐƯƠNG 10+ TRANG A4
+--------------------------------------------------------------------------------
+
+CHƯƠNG 1: GIỚI THIỆU TỔNG QUAN
+
+1.1. Hoàn cảnh ra đời và mục tiêu dự án
+Trong kỷ nguyên số hóa hiện nay, nhu cầu giải trí thông qua việc đọc truyện tranh (manga, manhwa, manhua, webtoon) trực tuyến đang tăng trưởng với tốc độ chóng mặt. Tuy nhiên, thị trường hiện tại đang tồn tại nhiều nền tảng đọc truyện nhưng lại thiếu đi tính gắn kết cộng đồng, hoặc giao diện người dùng quá phức tạp, không tối ưu cho cả trải nghiệm đọc trên máy tính lẫn thiết bị di động. Quan trọng hơn, các nhóm dịch tự do (Translation Groups) thường gặp khó khăn trong việc quản lý sản phẩm của mình, thiếu không gian độc lập để đăng tải và tương tác với độc giả một cách chính thống. 
+Xuất phát từ thực trạng đó, nền tảng "Cứu Truyện" ra đời với mục tiêu giải quyết triệt để bài toán này. Đây không chỉ là một website đọc truyện đơn thuần mà là một "hệ sinh thái cộng đồng" thu nhỏ, nơi kết nối trực tiếp giữa tác giả, nhóm dịch và độc giả. Mục tiêu cốt lõi của dự án là xây dựng một hệ thống ổn định, bảo mật cao, thao tác mượt mà và tập trung hoàn toàn vào chất lượng trải nghiệm của người dùng.
+
+1.2. Tầm nhìn và Sứ mệnh
+- Tầm nhìn: Trở thành nền tảng truyện tranh cộng đồng lớn nhất, nơi mọi nhóm dịch đều có thể dễ dàng quản lý và chia sẻ tác phẩm của mình một cách minh bạch, công bằng. Đồng thời là điểm đến tin cậy hàng ngày của hàng triệu độc giả yêu thích truyện tranh.
+- Sứ mệnh: 
+  + Cung cấp công cụ quản lý nội dung (CMS) mạnh mẽ nhất cho các nhóm dịch.
+  + Đem lại trải nghiệm đọc không quảng cáo rác, không giật lag.
+  + Thúc đẩy văn hóa đọc văn minh thông qua hệ thống đánh giá và bình luận chất lượng.
+
+1.3. Đối tượng người dùng mục tiêu
+- Độc giả phổ thông (Guest): Những người truy cập vãng lai, có nhu cầu tìm kiếm và đọc truyện nhanh chóng mà không cần ràng buộc tài khoản.
+- Độc giả thành viên (User): Những độc giả trung thành, có nhu cầu lưu trữ lịch sử đọc, theo dõi truyện, đánh giá và tương tác với cộng đồng.
+- Nhóm dịch / Dịch giả (Translation Group): Những đội ngũ sản xuất nội dung, cần công cụ đăng tải, quản lý chapter, quản lý thành viên và theo dõi thống kê lượt đọc.
+- Quản trị viên hệ thống (Administrator): Ban quản trị nền tảng, thực hiện nhiệm vụ điều phối, kiểm duyệt nội dung, xử lý vi phạm và duy trì sự ổn định của toàn hệ thống.
+
+1.4. Phạm vi của hệ thống
+Hệ thống bao gồm hai thành phần chính:
+- Frontend (Web Application): Giao diện tương tác trực tiếp với người dùng, được xây dựng thuần HTML/JS/CSS, tương thích đa nền tảng (Responsive Design).
+- Backend (RESTful API Server): Hệ thống xử lý nghiệp vụ lõi, quản lý cơ sở dữ liệu, xác thực và phân quyền, được xây dựng dựa trên framework Spring Boot của Java.
+
+1.5. Giới hạn của hệ thống (Trong giai đoạn hiện tại)
+- Chưa hỗ trợ tính năng livestream hay mạng xã hội toàn diện.
+- Chưa tích hợp ví điện tử hay cổng thanh toán thực (các tính năng này đã được lược bỏ để tập trung vào giá trị cộng đồng thuần túy).
+- Nội dung tập trung hoàn toàn vào định dạng hình ảnh (truyện tranh), chưa hỗ trợ light novel hay truyện chữ.
+
+
+CHƯƠNG 2: MÔ HÌNH KIẾN TRÚC VÀ CÔNG NGHỆ ÁP DỤNG
+
+2.1. Kiến trúc tổng thể (Client-Server Architecture)
+Dự án được xây dựng theo mô hình Client-Server phân tách hoàn toàn (Decoupled Architecture). 
+- Client (Frontend) chịu trách nhiệm hiển thị giao diện và xử lý tương tác người dùng. Nó không chứa bất kỳ kết nối trực tiếp nào tới cơ sở dữ liệu.
+- Server (Backend) chịu trách nhiệm xử lý logic nghiệp vụ, giao tiếp với cơ sở dữ liệu và trả về dữ liệu dưới định dạng chuẩn JSON thông qua các API endpoint.
+
+2.2. Công nghệ Frontend
+- HTML5 / CSS3: Xây dựng cấu trúc và định dạng nội dung trang web. Sử dụng CSS Grid và Flexbox để tạo ra các layout phức tạp nhưng linh hoạt.
+- Bootstrap 5: CSS Framework chính được sử dụng để đẩy nhanh quá trình phát triển UI, tận dụng các component có sẵn (Modal, Dropdown, Card, Grid system) và đảm bảo tính Responsive trên mọi kích thước màn hình.
+- Vanilla JavaScript (ES6+): Xử lý các logic phía client, gọi API (Fetch API), quản lý state cục bộ, và điều hướng người dùng mà không cần phụ thuộc vào các framework nặng nề như React hay Angular, giúp tối ưu hóa tốc độ tải trang ban đầu.
+- Swiper JS: Thư viện tạo hiệu ứng Carousel/Slider mượt mà cho các phần Banner truyện nổi bật và danh sách truyện mới cập nhật.
+
+2.3. Công nghệ Backend
+- Java 17: Ngôn ngữ lập trình lõi với các tính năng hiện đại, hiệu suất cao.
+- Spring Boot 3.x: Framework nền tảng, giúp cấu hình và triển khai ứng dụng nhanh chóng nhờ cơ chế Auto-configuration.
+- Spring MVC: Xây dựng các RESTful Controller để đón nhận và xử lý HTTP Request từ Frontend.
+- Spring Data JPA & Hibernate: ORM (Object-Relational Mapping) framework, giúp trừu tượng hóa các thao tác với cơ sở dữ liệu, quản lý Entity và quan hệ giữa các bảng.
+- Spring Security & JWT (JSON Web Token): Hệ thống bảo vệ các endpoint, mã hóa mật khẩu, tạo token xác thực không trạng thái (stateless) cho mỗi phiên đăng nhập, giúp tăng tính bảo mật và dễ dàng mở rộng.
+
+2.4. Cơ sở dữ liệu và lưu trữ
+- MySQL / PostgreSQL: Hệ quản trị cơ sở dữ liệu quan hệ (RDBMS) dùng để lưu trữ toàn bộ dữ liệu có cấu trúc của hệ thống (User, Series, Chapter, Group).
+- Cơ chế lưu trữ ảnh: Tạm thời sử dụng thư mục cục bộ (Local Storage) để lưu trữ bìa truyện và các trang truyện, trả về qua URL mapping tĩnh của Spring Boot. (Tương lai có thể chuyển sang Cloud Storage như AWS S3).
+
+2.5. Bảo mật hệ thống
+- CORS (Cross-Origin Resource Sharing): Cấu hình nghiêm ngặt để chỉ cho phép các domain được chỉ định (như localhost) truy cập vào API.
+- Password Hashing: Sử dụng thuật toán BCrypt để băm mật khẩu người dùng trước khi lưu vào DB. Không bao giờ lưu mật khẩu dạng plaintext.
+- Rate Limiting & Filter: Sử dụng các chuỗi lọc (Filter Chain) của Spring Security để chặn các truy cập trái phép vào các API yêu cầu quyền Admin hoặc Group Leader.
+
+
+CHƯƠNG 3: QUẢN LÝ VÀ PHÂN QUYỀN NGƯỜI DÙNG (ROLES & PERMISSIONS)
+
+Hệ thống "Cứu Truyện" áp dụng mô hình Role-Based Access Control (RBAC) để phân định rõ ràng ranh giới và giới hạn thao tác của từng cá nhân.
+
+3.1. Khách (Guest)
+- Đặc điểm: Người dùng không có tài khoản hoặc chưa đăng nhập.
+- Quyền hạn:
+  + Xem trang chủ, danh sách truyện, bảng xếp hạng.
+  + Tìm kiếm truyện theo tên, thể loại.
+  + Xem chi tiết một bộ truyện (Mô tả, danh sách chương, tên nhóm dịch, tác giả).
+  + Đọc nội dung các chương truyện được thiết lập ở trạng thái công khai.
+- Giới hạn: Không thể bình luận, không thể đánh giá (rate), không thể theo dõi (follow) truyện, không thể đăng truyện.
+
+3.2. Độc giả thành viên (User / Reader)
+- Đặc điểm: Người dùng đã đăng ký tài khoản hợp lệ qua email/username.
+- Quyền hạn:
+  + Bao gồm mọi quyền của Guest.
+  + Tương tác với cộng đồng: Viết bình luận, thả tim, đánh giá sao cho truyện.
+  + Quản lý cá nhân: Thêm truyện vào danh sách theo dõi (Bookmarks), xem lại lịch sử các truyện đã đọc.
+  + Cài đặt hồ sơ: Thay đổi avatar, đổi mật khẩu, cập nhật thông tin cá nhân.
+  + Xin gia nhập Nhóm dịch: Gửi yêu cầu xin vào một Translation Group hiện có để trở thành Translator.
+
+3.3. Dịch giả và Trưởng nhóm dịch (Translator & Group Leader)
+- Đặc điểm: Những User thuộc về một nhóm dịch cụ thể. Group Leader có thẩm quyền cao nhất trong nhóm.
+- Quyền hạn của Translator (Thành viên nhóm):
+  + Tham gia vào quá trình đăng tải chương mới cho các bộ truyện mà nhóm mình quản lý.
+  + Chỉnh sửa nội dung các chương do chính mình đăng tải.
+- Quyền hạn của Group Leader (Trưởng nhóm):
+  + Bao gồm quyền của Translator.
+  + Tạo mới một dự án truyện (Series) cho nhóm.
+  + Chỉnh sửa thông tin truyện (Sửa tên, bìa, thể loại, tóm tắt).
+  + Gửi yêu cầu xét duyệt truyện lên cho Admin.
+  + Quản lý nhân sự: Duyệt đơn xin vào nhóm, đuổi thành viên khỏi nhóm, giải tán nhóm.
+
+3.4. Quản trị viên (Administrator)
+- Đặc điểm: Tài khoản siêu quyền lực, quản lý toàn bộ hệ sinh thái của nền tảng.
+- Quyền hạn:
+  + Dashboard thống kê: Xem tổng quan số lượng người dùng, truyện, lượt truy cập.
+  + Quản lý Hệ thống: Duyệt hoặc từ chối các bộ truyện mới được các nhóm dịch đăng tải. Điều này ngăn chặn nội dung rác, vi phạm pháp luật.
+  + Quản lý Thể loại (Genres): Thêm, sửa, xóa các thẻ/thể loại truyện (Action, Romance, Manga, Webtoon...).
+  + Quản lý Người dùng: Khóa/Mở khóa tài khoản có hành vi vi phạm tiêu chuẩn cộng đồng.
+  + Xóa nội dung: Có quyền cưỡng chế xóa bất kỳ truyện hoặc chương nào vi phạm bản quyền hoặc luật pháp.
+
+
+CHƯƠNG 4: PHÂN TÍCH NGHIỆP VỤ CHI TIẾT (BUSINESS PROCESSES)
+
+Nghiệp vụ phần mềm là trái tim của hệ thống. Dưới đây là phân tích luồng chạy thực tế của các chức năng lõi.
+
+4.1. Nghiệp vụ Quản lý Tài khoản và Xác thực
+4.1.1. Quy trình Đăng ký tài khoản
+- Bước 1: Người dùng truy cập form đăng ký, nhập Username, Email, Password, và Confirm Password.
+- Bước 2: Frontend kiểm tra tính hợp lệ cơ bản (Mật khẩu phải dài hơn 6 ký tự, email đúng định dạng, hai mật khẩu trùng khớp).
+- Bước 3: Gửi API POST đến `/api/auth/register`.
+- Bước 4: Backend kiểm tra xem Username hoặc Email đã tồn tại trong DB chưa. Nếu có, trả về mã lỗi 400 (Bad Request).
+- Bước 5: Nếu hợp lệ, hệ thống dùng BCrypt mã hóa mật khẩu, tạo một bản ghi mới trong bảng `Users` với Role mặc định là `ROLE_USER`.
+- Bước 6: Trả về thông báo thành công. Người dùng tự động chuyển hướng sang trang Đăng nhập.
+
+4.1.2. Quy trình Đăng nhập và Cấp phát Token
+- Bước 1: Người dùng nhập Username và Password.
+- Bước 2: Gọi API POST đến `/api/auth/login`.
+- Bước 3: Spring Security kiểm tra thông tin. Nếu sai mật khẩu hoặc tài khoản bị khóa, trả về lỗi 401 (Unauthorized).
+- Bước 4: Nếu đúng, hệ thống sinh ra một chuỗi JWT (JSON Web Token) chứa Payload là thông tin định danh của người dùng (userId, username, role) và thời hạn sống của token (ví dụ 1 tiếng hoặc 24 tiếng).
+- Bước 5: Frontend nhận Token, lưu trữ vào `localStorage` hoặc `sessionStorage` của trình duyệt.
+- Bước 6: Trong các request tiếp theo tới các API bảo mật, Frontend tự động đính kèm Token này vào Header `Authorization: Bearer <token>`.
+
+4.2. Nghiệp vụ Quản lý Nhóm dịch (Translation Group)
+Đây là nghiệp vụ cốt lõi làm nên tính cộng đồng của ứng dụng.
+4.2.1. Đăng ký thành lập nhóm dịch mới
+- Điều kiện: Người dùng phải là `ROLE_USER` thông thường và chưa tham gia bất kỳ nhóm dịch nào.
+- Quy trình: Người dùng điền tên nhóm và mô tả -> Gửi yêu cầu -> Hệ thống tạo một bản ghi `TranslationGroup` với trạng thái `PENDING` và gắn người dùng này là `Leader`.
+4.2.2. Duyệt thành lập nhóm (Admin)
+- Quản trị viên vào màn hình Quản lý Nhóm, xem danh sách các nhóm đang `PENDING`.
+- Nếu Admin "Approve" (Duyệt), trạng thái nhóm chuyển thành `ACTIVE`. Người tạo nhóm tự động được nâng cấp quyền thành `ROLE_GROUP_LEADER`.
+- Nếu Admin "Reject" (Từ chối), bản ghi nhóm bị xóa hoặc chuyển trạng thái `REJECTED`, người dùng có thể thử tạo lại nhóm khác.
+4.2.3. Quy trình Đăng tải Truyện bởi Nhóm dịch
+- Nhóm dịch sau khi hoạt động sẽ có một khu vực riêng (Workspace).
+- Leader chọn "Đăng truyện mới", nhập các metadata như: Tên truyện, Tên thay thế, Tác giả, Thể loại, Tóm tắt, và upload Ảnh bìa.
+- Truyện được tạo ra sẽ có trạng thái `PENDING` (chờ duyệt). Nó chưa xuất hiện trên trang chủ.
+- Admin sẽ xem xét nội dung truyện. Nếu hợp lệ, Admin nhấn "Duyệt". Truyện chuyển sang trạng thái `APPROVED` và chính thức được tìm kiếm, hiển thị trên nền tảng.
+
+4.3. Nghiệp vụ Quản lý Truyện (Manga/Series) và Tìm kiếm
+4.3.1. Tìm kiếm đa luồng (Advanced Search)
+- Yêu cầu: Khách hàng cần tìm những bộ truyện có chứa từ khóa nhất định trong tên truyện HOẶC nằm trong một thể loại cụ thể (ví dụ: gõ "action" sẽ ra truyện tên "Action Man" hoặc truyện thuộc thể loại "Hành động").
+- Xử lý Backend: Repository sử dụng câu lệnh JPQL JOIN giữa bảng `Series` và `Genres`:
+  `SELECT DISTINCT s FROM Series s LEFT JOIN s.genres g WHERE (LOWER(s.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(g.genreName) LIKE LOWER(CONCAT('%', :query, '%'))) AND s.approvalStatus = :status`
+- Xử lý Frontend: Trang `search.html` có thanh tìm kiếm thông minh, tự động gọi API mỗi khi nhấn Enter hoặc click vào các Tag phổ biến. Kết quả trả về được phân trang (Pagination) để tối ưu hóa hiệu năng render.
+
+4.4. Nghiệp vụ Quản lý Chương truyện (Chapters)
+4.4.1. Đăng tải và Sắp xếp chương
+- Một khi bộ truyện đã được `APPROVED`, nhóm dịch có thể nhấn "Thêm chương".
+- Mỗi chương cần có thông tin: Số chương (Chapter Number), Tiêu đề chương (không bắt buộc), và danh sách các hình ảnh.
+- Hệ thống hỗ trợ xử lý upload hàng loạt hình ảnh. Backend lưu trữ vật lý ảnh và ghi lại đường dẫn vào DB theo đúng thứ tự.
+- Khi người dùng vào trang "Chi tiết truyện", hệ thống hiển thị danh sách chương được truy vấn từ DB và mặc định sắp xếp theo "Số chương giảm dần" (Chương mới nhất lên đầu).
+
+4.5. Nghiệp vụ Tương tác Cộng đồng
+4.5.1. Theo dõi (Bookmark/Follow)
+- Khi đọc một bộ truyện hay, User có thể nhấn nút "Theo dõi".
+- Nút bấm sẽ gửi một request `POST /api/manga/{id}/favorite` để ghi nhận vào bảng `Favorites`. 
+- Giao diện lập tức đổi màu nút thành "Đang theo dõi". Người dùng có thể vào khu vực "Truyện theo dõi" trong trang cá nhân để xem lại danh sách này.
+- Nghiệp vụ này giúp người dùng không bao giờ bỏ lỡ khi truyện có cập nhật chương mới.
+4.5.2. Đánh giá (Rating)
+- User có quyền đánh giá một bộ truyện từ 1 đến 5 sao.
+- Khi User gửi đánh giá, Backend lưu vào bảng `Ratings` và lập tức tính toán lại trường `averageRating` (Điểm trung bình) và `totalRatings` (Tổng số lượt đánh giá) của bộ `Series` đó. 
+- Việc lưu bộ nhớ đệm (caching) các số liệu này vào bảng `Series` giúp truy vấn Top Truyện Đánh Giá Cao cực nhanh mà không cần phải thực hiện hàm `AVG()` trên hàng triệu record mỗi khi có người vào trang chủ.
+4.5.3. Thống kê lượt đọc (View Tracking)
+- Mỗi khi người dùng bấm vào đọc một chương, Frontend gửi tín hiệu ngầm tới Backend để tăng lượt xem (`totalViews`).
+- Số liệu này được dùng để xây dựng bảng xếp hạng "Top 3 truyện được đọc nhiều nhất trong 24h" trên trang chủ (Banner).
+
+
+CHƯƠNG 5: THIẾT KẾ CƠ SỞ DỮ LIỆU (DATABASE SCHEMA)
+
+Để đảm bảo hệ thống vận hành trơn tru và dễ bảo trì, cấu trúc CSDL được chuẩn hóa ở mức 3NF (Third Normal Form) kết hợp với một vài kỹ thuật phi chuẩn hóa (Denormalization) có chủ đích để tăng tốc độ truy vấn đọc.
+
+5.1. Bảng Users (Người dùng)
+- Lưu trữ các thông tin định danh: `user_id` (PK), `username`, `email`, `password_hash`, `role` (enum), `avatar_url`, `status`.
+- Có khóa ngoại `group_id` liên kết đến bảng TranslationGroups để biết người dùng này thuộc nhóm dịch nào.
+
+5.2. Bảng TranslationGroups (Nhóm dịch)
+- Các trường: `group_id` (PK), `name`, `leader_id` (FK tới Users), `status`, `created_at`.
+- Lưu trữ thông tin của các nhóm biên dịch trên nền tảng.
+
+5.3. Bảng Series (Bộ truyện)
+- Đây là trung tâm của hệ thống.
+- Các trường: `series_id` (PK), `title`, `alternative_title`, `description`, `cover_url`, `series_type`, `approval_status`, `uploaded_by` (FK), `group_id` (FK).
+- Các trường phi chuẩn hóa để tối ưu hiệu năng: `total_views`, `total_ratings`, `average_rating`, `total_favorites`. Thay vì phải JOIN và SUM/AVG mỗi lần query, hệ thống trigger cập nhật các trường này mỗi khi có thay đổi.
+- `updated_at`: Rất quan trọng, được cập nhật mỗi khi có chương mới được thêm vào, dùng để hiển thị phần "Truyện Mới Cập Nhật".
+
+5.4. Bảng Chapters (Chương truyện)
+- Các trường: `chapter_id` (PK), `series_id` (FK), `chapter_number` (int hoặc float để hỗ trợ chương 1.5), `title`, `view_count`, `created_at`.
+- Có thể kết hợp thêm bảng `ChapterImages` (hoặc lưu dạng JSON array trong 1 cột) để quản lý danh sách đường dẫn file ảnh của chương đó.
+
+5.5. Quan hệ Thể loại (Genres) và Tác giả (Authors)
+- Vì một truyện có thể có nhiều thể loại và một thể loại có nhiều truyện (Quan hệ Nhiều - Nhiều / M-N), ta sử dụng bảng trung gian.
+- Bảng `Genres`: `genre_id`, `genre_name`.
+- Bảng trung gian `SeriesGenres`: `series_id` (FK), `genre_id` (FK).
+- Tương tự với bảng `Authors` và `SeriesAuthors`.
+
+5.6. Bảng Tương tác (Interactions)
+- Bảng `Favorites`: Khóa chính kép (`user_id`, `series_id`), thời gian `created_at`. Đảm bảo mỗi người chỉ theo dõi một truyện một lần.
+- Bảng `Ratings`: Khóa chính kép (`user_id`, `series_id`), trường `score` (1-5).
+- Bảng `Comments`: `comment_id`, `user_id`, `series_id` hoặc `chapter_id`, `content`, `parent_id` (hỗ trợ bình luận lồng nhau - reply), `created_at`.
+
+
+CHƯƠNG 6: GIAO DIỆN VÀ TRẢI NGHIỆM NGƯỜI DÙNG (UI/UX)
+
+Yếu tố UI/UX quyết định việc độc giả có muốn quay lại nền tảng hay không. "Cứu Truyện" áp dụng thiết kế Dark Mode (Chế độ tối) kết hợp màu nhấn vàng cam (Warning/Orange), tạo cảm giác "ngầu", hiện đại và đỡ mỏi mắt khi đọc truyện vào ban đêm.
+
+6.1. Cấu trúc Trang Chủ (index.html)
+- Header: Chứa Logo nổi bật, thanh tìm kiếm nhanh (kèm nút mở popup tìm kiếm nâng cao), và Menu điều hướng người dùng (Login, Cài đặt, Đăng truyện, Quản lý nhóm).
+- Hero Banner (Khu vực nổi bật): Sử dụng Swiper JS hiển thị Top 3 truyện đọc nhiều nhất trong 24h. Mỗi slide có ảnh nền mờ (blur background) và ảnh bìa sắc nét đè lên trên, tạo chiều sâu 3D.
+- Danh sách truyện: Được chia thành các dải (Grid) gọn gàng, hiển thị Bìa truyện, Tên truyện (cắt gọt text-truncate tránh vỡ layout), thể loại và ngày cập nhật. Có hiệu ứng Hover phóng to ảnh nhẹ nhàng.
+
+6.2. Trang Chi tiết Truyện (chi-tiet-truyen.html)
+- Phân tách rõ ràng 2 khối: Khối thông tin chung (Ảnh bìa, tên, tác giả, nhóm dịch, số sao, lượt xem) ở trên cùng.
+- Phía dưới là thanh công cụ tương tác: Nút "Đọc từ đầu" nổi bật, nút "Theo dõi" và khu vực đánh giá sao.
+- Phần Danh sách chương: Hiển thị dưới dạng danh sách kẻ dòng (Table-like list). Giao diện tối giản, hiển thị Tên chương, Tên nhóm dịch và Ngày đăng. Các chương đã đọc có thể được làm mờ (gray-out) để báo hiệu cho người dùng.
+
+6.3. Trang Đọc Truyện (doc-truyen.html)
+- Trải nghiệm cốt lõi của ứng dụng. Giao diện bị làm tối đa phần để tập trung toàn bộ ánh nhìn vào trang truyện.
+- Dải hình ảnh được render dưới dạng block tràn viền hoặc có margin nhỏ tùy thiết bị, loại bỏ khoảng trắng rườm rà.
+- Thanh công cụ nổi (Floating Toolbar) ở dưới đáy màn hình cho phép: Chuyển chương trước/sau nhanh chóng, Quay lại trang chi tiết, Bật/Tắt chế độ toàn màn hình (Fullscreen API).
+
+6.4. Trang Quản lý & Cài đặt
+- Cấu trúc Sidebar (Thanh bên) bên trái để điều hướng giữa các chức năng: Hồ sơ, Thay đổi mật khẩu, Truyện theo dõi.
+- Các biểu mẫu (Forms) được thiết kế to, rõ ràng, với tính năng Validation (Báo lỗi đỏ nếu nhập sai) hiển thị trực tiếp (Real-time feedback).
+
+
+CHƯƠNG 7: KẾ HOẠCH BẢO TRÌ VÀ PHÁT TRIỂN TƯƠNG LAI (ROADMAP)
+
+Dự án hiện tại đã đáp ứng hoàn hảo nhu cầu cơ bản của một hệ sinh thái truyện tranh. Tuy nhiên, kiến trúc phần mềm được thiết kế chuẩn mực cho phép hệ thống dễ dàng mở rộng (Scalability) trong tương lai.
+
+7.1. Tối ưu hóa hiệu năng (Performance Optimization)
+- Tích hợp Redis Cache: Áp dụng Redis để lưu trữ đệm các truy vấn đọc nhiều như Trang chủ, Top truyện, Danh sách Thể loại. Giúp giảm tải tối đa cho Database.
+- Tích hợp CDN (Content Delivery Network): Giao phó việc phân phối hình ảnh chương truyện cho CDN để tăng tốc độ tải ảnh cho người dùng ở xa server gốc, chống nghẽn mạng băng thông.
+
+7.2. Tích hợp Trí tuệ Nhân tạo (AI) và Machine Learning
+- Thuật toán Gợi ý (Recommendation Engine): Thay vì gợi ý truyện theo lượt xem chung chung, hệ thống sẽ phân tích Lịch sử đọc và Thể loại yêu thích của từng User để gợi ý truyện cá nhân hóa (Giống thuật toán của Netflix hay Spotify).
+- Công cụ hỗ trợ Dịch thuật: Tích hợp API OCR (Nhận dạng ký tự quang học) và Dịch tự động để giúp các Translator dịch thô nhanh hơn, chỉ cần tốn công chỉnh sửa văn phong (Proofreading).
+
+7.3. Gamification (Game hóa) và Xây dựng Cộng đồng
+- Hệ thống Cấp bậc (Level) và Huy hiệu (Badge) cho người dùng chăm chỉ đọc truyện hoặc bình luận hay.
+- Nền tảng "Donate" (Ủng hộ): Cho phép độc giả tặng tiền ảo/vật phẩm ảo cho các Nhóm dịch yêu thích để khích lệ tinh thần làm việc.
+
+7.4. Bảo vệ Bản quyền số (DRM)
+- Mặc dù là nền tảng cộng đồng, việc bảo vệ công sức của Nhóm dịch khỏi bị các "web lậu" (leechers) cào dữ liệu là rất quan trọng.
+- Kế hoạch áp dụng kỹ thuật chèn Watermark tự động chìm vào ảnh, hoặc cắt nhỏ ảnh và xáo trộn mã HTML/Canvas để ngăn chặn bot tự động lưu ảnh.
+
+
+KẾT LUẬN
+
+Hệ thống nền tảng "Cứu Truyện" là một minh chứng cho thấy sự kết hợp giữa kiến trúc kỹ thuật hiện đại và sự am hiểu sâu sắc về nhu cầu nghiệp vụ của cộng đồng truyện tranh. Bằng việc phân tách rõ ràng Roles (Guest, User, Translator, Admin) và xây dựng quy trình làm việc (Workflow) khép kín từ khâu Đăng ký Nhóm dịch -> Duyệt nội dung -> Đăng chương -> Độc giả tương tác, hệ thống giải quyết trọn vẹn điểm nghẽn của các mô hình web truyện truyền thống.
+Với giao diện UI/UX được trau chuốt tỉ mỉ, công nghệ Backend Spring Boot vững chắc cùng khả năng co giãn linh hoạt, "Cứu Truyện" hoàn toàn có tiềm năng trở thành điểm đến lý tưởng số một, tạo ra một sân chơi công bằng, minh bạch và gắn kết chặt chẽ cho toàn thể những người đam mê truyện tranh trong thời đại số.
+--------------------------------------------------------------------------------
+(Tài liệu này được biên soạn độc quyền cho dự án Cứu Truyện. Mọi chi tiết thiết kế và nghiệp vụ có thể được tham chiếu lại từ mã nguồn hệ thống).

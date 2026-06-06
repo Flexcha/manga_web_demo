@@ -93,9 +93,12 @@ public class TranslationGroupController {
         group.setStatus(TranslationGroup.Status.ACTIVE);
         groupRepository.save(group);
 
-        // Cập nhật quyền uploader cho leader
+        // Cập nhật quyền uploader và gán groupId cho leader
         User leader = group.getLeader();
-        leader.setRole(User.Role.uploader);
+        leader.setGroupId(group.getGroupId());
+        if (leader.getRole() == User.Role.user) {
+            leader.setRole(User.Role.uploader);
+        }
         userRepository.save(leader);
 
         return ResponseEntity.ok(group);
@@ -111,6 +114,88 @@ public class TranslationGroupController {
         groupRepository.save(group);
 
         return ResponseEntity.ok(group);
+    }
+
+    // Lấy danh sách thành viên của nhóm
+    @GetMapping("/{groupId}/members")
+    public ResponseEntity<?> getGroupMembers(@PathVariable Integer groupId) {
+        TranslationGroup group = groupRepository.findById(groupId).orElse(null);
+        if (group == null) return ResponseEntity.badRequest().body("Group not found");
+
+        Integer leaderId = group.getLeader() != null ? group.getLeader().getUserId() : -1;
+
+        List<User> members = userRepository.findAll().stream()
+                .filter(u -> (u.getGroupId() != null && u.getGroupId().equals(groupId)) || u.getUserId().equals(leaderId))
+                .map(u -> {
+                    u.setPasswordHash(null); // hide password
+                    return u;
+                })
+                .toList();
+        return ResponseEntity.ok(members);
+    }
+
+    // Thêm hoặc cập nhật vai trò thành viên trong nhóm
+    @PutMapping("/{groupId}/members/{userId}")
+    public ResponseEntity<?> addMemberToGroup(@PathVariable Integer groupId, @PathVariable Integer userId, @RequestBody Map<String, Object> request, Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).body("Unauthorized");
+        User currentUser = userRepository.findByUsername(auth.getName()).orElse(null);
+        TranslationGroup group = groupRepository.findById(groupId).orElse(null);
+        User targetUser = userRepository.findById(userId).orElse(null);
+
+        if (group == null || targetUser == null || currentUser == null) return ResponseEntity.badRequest().body("Group or User not found");
+
+        boolean isAdmin = currentUser.getRole() == User.Role.admin;
+        boolean isLeader = group.getLeader().getUserId().equals(currentUser.getUserId());
+
+        if (!isAdmin && !isLeader) {
+            return ResponseEntity.status(403).body("Chỉ trưởng nhóm hoặc admin mới được thực hiện");
+        }
+
+        Object roleObj = request.get("role");
+        String roleStr = roleObj != null ? roleObj.toString() : "translator";
+        User.Role newRole;
+        try {
+            newRole = User.Role.valueOf(roleStr.toLowerCase());
+        } catch (Exception e) {
+            newRole = User.Role.translator;
+        }
+
+        targetUser.setGroupId(groupId);
+        // Cập nhật role (ngoại trừ leader của nhóm)
+        if (!targetUser.getUserId().equals(group.getLeader().getUserId())) {
+            targetUser.setRole(newRole);
+        }
+        userRepository.save(targetUser);
+
+        return ResponseEntity.ok(Map.of("message", "Thao tác thành công"));
+    }
+
+    // Xóa thành viên khỏi nhóm
+    @DeleteMapping("/{groupId}/members/{userId}")
+    public ResponseEntity<?> removeMemberFromGroup(@PathVariable Integer groupId, @PathVariable Integer userId, Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).body("Unauthorized");
+        User currentUser = userRepository.findByUsername(auth.getName()).orElse(null);
+        TranslationGroup group = groupRepository.findById(groupId).orElse(null);
+        User targetUser = userRepository.findById(userId).orElse(null);
+
+        if (group == null || targetUser == null || currentUser == null) return ResponseEntity.badRequest().body("Group or User not found");
+
+        boolean isAdmin = currentUser.getRole() == User.Role.admin;
+        boolean isLeader = group.getLeader().getUserId().equals(currentUser.getUserId());
+
+        if (!isAdmin && !isLeader) {
+            return ResponseEntity.status(403).body("Không có quyền");
+        }
+        
+        if (targetUser.getUserId().equals(group.getLeader().getUserId())) {
+            return ResponseEntity.badRequest().body("Không thể xóa trưởng nhóm");
+        }
+
+        targetUser.setGroupId(null);
+        targetUser.setRole(User.Role.user);
+        userRepository.save(targetUser);
+
+        return ResponseEntity.ok(Map.of("message", "Đã xóa thành viên"));
     }
 
     // Xóa nhóm

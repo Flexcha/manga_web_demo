@@ -79,7 +79,7 @@ public class Series {
     )
     private Set<Author> authors;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "SeriesGenres",
         joinColumns = @JoinColumn(name = "series_id"),

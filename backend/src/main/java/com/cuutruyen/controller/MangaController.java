@@ -13,12 +13,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import com.cuutruyen.repository.GenreRepository;
+import com.cuutruyen.entity.Genre;
+
 @RestController
 @RequestMapping("/api/manga")
 @RequiredArgsConstructor
 public class MangaController {
     private final MangaService mangaService;
     private final UserRepository userRepository;
+    private final GenreRepository genreRepository;
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<Genre>> getAllGenres() {
+        return ResponseEntity.ok(genreRepository.findAll());
+    }
 
     @GetMapping("/latest")
     public ResponseEntity<List<Series>> getLatest(@RequestParam(defaultValue = "10") int limit) {
@@ -28,6 +37,11 @@ public class MangaController {
     @GetMapping("/top-rated")
     public ResponseEntity<List<Series>> getTopRated(@RequestParam(defaultValue = "10") int limit) {
         return ResponseEntity.ok(mangaService.getTopRatedManga(limit));
+    }
+
+    @GetMapping("/top-views")
+    public ResponseEntity<List<Series>> getTopViews(@RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(mangaService.getTopViewsManga(limit));
     }
 
     @GetMapping
@@ -73,6 +87,7 @@ public class MangaController {
             @RequestParam("alternativeTitle") String alternativeTitle,
             @RequestParam("description") String description,
             @RequestParam("seriesType") String seriesType,
+            @RequestParam(value = "genres", required = false) List<String> genres,
             @RequestParam(value = "cover", required = false) MultipartFile coverFile,
             Authentication auth) {
         User uploader = null;
@@ -80,7 +95,7 @@ public class MangaController {
             uploader = userRepository.findByUsername(auth.getName()).orElse(null);
         }
         return ResponseEntity
-                .ok(mangaService.createSeriesWithCover(title, alternativeTitle, description, seriesType, coverFile, uploader));
+                .ok(mangaService.createSeriesWithCover(title, alternativeTitle, description, seriesType, coverFile, uploader, genres));
     }
 
     @PostMapping("/{id}/favorite")

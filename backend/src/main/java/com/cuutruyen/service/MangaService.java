@@ -45,6 +45,7 @@ public class MangaService {
     private final RatingRepository ratingRepository;
     private final ReadingProgressRepository readingProgressRepository;
     private final PurchasedChapterRepository purchasedChapterRepository;
+    private final com.cuutruyen.repository.GenreRepository genreRepository;
     private static final String UPLOAD_DIR = "uploads";
 
     public List<Series> getLatestManga(int limit) {
@@ -55,17 +56,22 @@ public class MangaService {
         return seriesRepository.findAll(PageRequest.of(0, limit, Sort.by("averageRating").descending())).getContent();
     }
 
+    public List<Series> getTopViewsManga(int limit) {
+        return seriesRepository.findTopByViews(Series.ApprovalStatus.approved,
+                PageRequest.of(0, limit));
+    }
+
     public Page<Series> getAllManga(int page, int size) {
         return seriesRepository.findByApprovalStatus(Series.ApprovalStatus.approved,
                 PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 
     public Page<Series> getAllMangaForAdmin(int page, int size) {
-        return seriesRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return seriesRepository.findAll(PageRequest.of(page, size, Sort.by("seriesId").ascending()));
     }
 
     public Page<Series> searchManga(String query, int page, int size) {
-        return seriesRepository.searchByTitle(
+        return seriesRepository.searchByTitleOrGenre(
                 query, Series.ApprovalStatus.approved, PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 
@@ -80,7 +86,7 @@ public class MangaService {
     }
 
     public Series createSeriesWithCover(String title, String alternativeTitle, String description, String seriesType,
-            MultipartFile coverFile, User uploader) {
+            MultipartFile coverFile, User uploader, List<String> genreNames) {
         Series series = new Series();
         series.setTitle(title);
         series.setAlternativeTitle(alternativeTitle);
@@ -96,6 +102,21 @@ public class MangaService {
             series.setSeriesType(Series.SeriesType.manga);
         }
         series.setUploadedBy(uploader);
+
+        // Process Genres
+        if (genreNames != null && !genreNames.isEmpty()) {
+            java.util.Set<com.cuutruyen.entity.Genre> genres = new java.util.HashSet<>();
+            for (String gName : genreNames) {
+                com.cuutruyen.entity.Genre genre = genreRepository.findByGenreName(gName.trim())
+                    .orElseGet(() -> {
+                        com.cuutruyen.entity.Genre newGenre = new com.cuutruyen.entity.Genre();
+                        newGenre.setGenreName(gName.trim());
+                        return genreRepository.save(newGenre);
+                    });
+                genres.add(genre);
+            }
+            series.setGenres(genres);
+        }
 
         // Find group of uploader
         if (uploader != null) {

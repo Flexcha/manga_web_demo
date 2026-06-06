@@ -3,7 +3,7 @@
  * Handles all network requests to the Backend API
  */
 const API_CONFIG = {
-    BASE_URL: "https://demo-nmcnpm.onrender.com/api", // Default Spring Boot port
+    BASE_URL: "http://localhost:8080/api",
     TIMEOUT: 5000
 };
 
@@ -49,7 +49,19 @@ const ApiService = {
                 signal: controller.signal
             });
             clearTimeout(id);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            if (!response.ok) {
+                const text = await response.text();
+                let errorMsg = `HTTP error! status: ${response.status}`;
+                try {
+                    const json = JSON.parse(text);
+                    if (json.message) errorMsg = json.message;
+                } catch (e) {
+                    if (text) errorMsg = text;
+                }
+                throw new Error(errorMsg);
+            }
+            
             const text = await response.text();
             return text ? JSON.parse(text) : null;
         } catch (error) {
@@ -63,6 +75,15 @@ const ApiService = {
     async getMangas() {
         const response = await this.fetchWithTimeout("/manga");
         return response.content !== undefined ? response.content : response;
+    },
+
+    async getTopViewsMangas(limit = 10) {
+        const response = await this.fetchWithTimeout(`/manga/top-views?limit=${limit}`);
+        return response.content !== undefined ? response.content : response;
+    },
+
+    async getGenres() {
+        return this.fetchWithTimeout("/manga/genres");
     },
 
     async searchMangas(query, page = 0, size = 20) {
@@ -127,6 +148,9 @@ const ApiService = {
         formData.append("alternativeTitle", mangaData.alternativeTitle);
         formData.append("description", mangaData.description);
         formData.append("seriesType", mangaData.seriesType);
+        if (mangaData.genres && mangaData.genres.length > 0) {
+            mangaData.genres.forEach(genre => formData.append("genres", genre));
+        }
         if (coverFile) {
             formData.append("cover", coverFile);
         }
@@ -151,6 +175,9 @@ const ApiService = {
         formData.append("description", mangaData.description);
         formData.append("seriesType", mangaData.seriesType);
         formData.append("status", mangaData.status);
+        if (mangaData.genres && mangaData.genres.length > 0) {
+            mangaData.genres.forEach(genre => formData.append("genres", genre));
+        }
         if (coverFile) {
             formData.append("cover", coverFile);
         }
@@ -274,14 +301,30 @@ const ApiService = {
     },
 
     async getProfile() {
-        return this.fetchWithTimeout("/user/profile");
+        return this.fetchWithTimeout("/users/me");
     },
 
-    async updateUserRole(userId, role) {
-        return this.fetchWithTimeout(`/users/${userId}/role`, {
+    async addMemberToGroup(groupId, userId, role) {
+        return this.fetchWithTimeout(`/groups/${groupId}/members/${userId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ role: role })
+        });
+    },
+
+    async updateEmail(email) {
+        return this.fetchWithTimeout(`/users/me/email`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+    },
+
+    async updatePassword(currentPassword, newPassword) {
+        return this.fetchWithTimeout(`/users/me/password`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword })
         });
     },
 
@@ -311,6 +354,16 @@ const ApiService = {
     // GROUP APIs
     async getGroupInfo(groupId) {
         return this.fetchWithTimeout(`/groups/${groupId}`);
+    },
+
+    async getGroupMembers(groupId) {
+        return this.fetchWithTimeout(`/groups/${groupId}/members`);
+    },
+
+    async deleteGroupMember(groupId, userId) {
+        return this.fetchWithTimeout(`/groups/${groupId}/members/${userId}`, {
+            method: 'DELETE'
+        });
     },
 
     async getMyGroup() {

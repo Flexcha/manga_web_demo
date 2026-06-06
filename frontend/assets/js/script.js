@@ -194,7 +194,7 @@ const setupAuthHandlers = () => {
             e.preventDefault();
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            window.location.href = 'index.html';
+            window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
         });
     }
 };
@@ -256,8 +256,8 @@ const updateHeaderUI = () => {
     }
 
     // 2. Toggle Guest vs User header
-    if (userData && headerUserView && headerGuestView) {
-        headerGuestView.classList.add('d-none');
+    if (userData && headerUserView) {
+        if (headerGuestView) headerGuestView.classList.add('d-none');
         headerUserView.classList.remove('d-none');
         headerUserView.classList.add('d-flex');
 
@@ -270,7 +270,7 @@ const updateHeaderUI = () => {
                 e.preventDefault();
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                window.location.href = 'index.html';
+                window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
             });
         });
 
@@ -281,7 +281,7 @@ const updateHeaderUI = () => {
             if (bellBtn) {
                 bellBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = 'thong-bao.html';
+                    window.location.href = window.location.pathname.includes('/pages/') ? 'thong-bao.html' : 'pages/thong-bao.html';
                 });
             }
         }
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.key === 'Enter') {
                     const query = liveSearchInput.value.trim();
                     if (query) {
-                        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                        window.location.href = (window.location.pathname.includes('/pages/') ? '' : 'pages/') + `search.html?q=${encodeURIComponent(query)}`;
                     }
                 }
             });
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnFullSearch.addEventListener('click', () => {
                     const query = liveSearchInput.value.trim();
                     if (query) {
-                        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                        window.location.href = (window.location.pathname.includes('/pages/') ? '' : 'pages/') + `search.html?q=${encodeURIComponent(query)}`;
                     }
                 });
             }
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (searchResultList) {
                                 if (matches.length > 0) {
                                     searchResultList.innerHTML = matches.map(m => `
-                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3">
+                                        <a href="${window.location.pathname.includes('/pages/') ? '' : 'pages/'}chi-tiet-truyen.html?id=${m.seriesId}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3">
                                              <img src="${getImageUrl(m.coverUrl)}" alt="Cover" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px;">
                                              <div>
                                                  <h6 class="mb-1 fw-bold text-dark">${m.title}</h6>

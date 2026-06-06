@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200"> <!-- Cố định kích thước cho Desktop -->
-    <meta name="description" content="Cứu Truyện - Truyện theo dõi">
-    <title>Cứu Truyện - Truyện Theo Dõi</title>
+    <meta name="description" content="Cứu Truyện - Truyện đã đọc">
+    <title>Cứu Truyện - Truyện Đã Đọc</title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         /* Trang full grid nên background có thể cần xám đồng bộ hơn */
         body {
@@ -49,7 +49,7 @@
 
                 <!-- Logo Center -->
                 <div class="col-2 text-center">
-                    <a href="index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
+                    <a href="../index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
                         CỨU TRUYỆN
                     </a>
                 </div>
@@ -82,7 +82,6 @@
                                 </li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
                                 </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
                                         href="dang-truyen.html">Đăng truyện</a></li>
                                 <li>
@@ -104,30 +103,22 @@
     <main class="py-5">
         <div class="container-fluid px-5 mx-auto" style="max-width: 1400px;">
 
-            <!-- Truyen Theo Doi Section -->
+            <!-- Truyen Da Doc Section -->
             <section class="recently-updated-section mb-5 position-relative">
                 <div class="d-flex justify-content-between align-items-center mb-5">
-                    <h4 class="fw-bold fs-5 text-uppercase text-secondary section-title">TRUYỆN THEO DÕI</h4>
+                    <h4 class="fw-bold fs-5 text-uppercase text-secondary section-title">TRUYỆN ĐÃ ĐỌC</h4>
                 </div>
 
                 <!-- Lưới 5 cột mỗi hàng `row-cols-5` -->
                 <div class="row row-cols-5 g-4 pb-5" id="mangaList">
-                    <!-- Nội dung sinh ra bằng Javascript -->
                     <div class="col-12 text-center py-5">
                         <div class="spinner-border text-primary" role="status"></div>
-                        <p class="mt-2 text-secondary">Đang tải danh sách truyện đang theo dõi...</p>
+                        <p class="mt-2 text-secondary">Đang tải lịch sử đọc...</p>
                     </div>
                 </div>
 
-                <!-- Phân trang -->
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-center" id="pagination">
-                        <!-- Pagination buttons will be injected here -->
-                    </ul>
-                </nav>
-
-                <script src="assets/js/api.js"></script>
-                <script src="assets/js/script.js"></script>
+                <script src="../assets/js/api.js"></script>
+                <script src="../assets/js/script.js"></script>
                 <script>
                     document.addEventListener('DOMContentLoaded', async () => {
                         const container = document.getElementById('mangaList');
@@ -135,24 +126,29 @@
                         try {
                             const user = JSON.parse(localStorage.getItem('user'));
                             if (!user) {
-                                window.location.href = 'index.html';
+                                window.location.href='../index.html';
                                 return;
                             }
 
-                            const favorites = await ApiService.getMeFavorites();
+                            const history = await ApiService.getMeHistory();
 
-                            if (favorites.length === 0) {
+                            if (history.length === 0) {
                                 container.innerHTML = `
                                     <div class="col-12 text-center py-5">
-                                        <i class="fa-solid fa-heart-crack fs-1 mb-3 text-secondary opacity-25"></i>
-                                        <p class="text-secondary fw-bold">Anh chưa theo dõi truyện nào cả!</p>
-                                        <a href="index.html" class="btn btn-primary rounded-pill px-4 mt-2">Khám phá ngay</a>
+                                        <i class="fa-solid fa-clock-rotate-left fs-1 mb-3 text-secondary opacity-25"></i>
+                                        <p class="text-secondary fw-bold">Anh chưa đọc truyện nào cả!</p>
+                                        <a href="../index.html" class="btn btn-primary rounded-pill px-4 mt-2">Đọc ngay</a>
                                     </div>
                                 `;
                                 return;
                             }
 
-                            container.innerHTML = favorites.map(manga => `
+                            container.innerHTML = history.map(item => {
+                                const manga = item.series;
+                                const chapter = item.chapter;
+                                const date = new Date(item.updatedAt).toLocaleString('vi-VN');
+
+                                return `
                                 <div class="col">
                                     <div class="manga-card h-100">
                                         <div class="card border-0 bg-transparent h-100">
@@ -161,20 +157,25 @@
                                                     <img src="${getImageUrl(manga.coverUrl) || ''}"
                                                         alt="${manga.title}" class="w-100 h-100 object-fit-cover" style="background-color: #f0f0f0;">
                                                 </a>
+                                                <span class="badge position-absolute top-0 start-0 m-2 rounded-pill chapter-badge">C. ${chapter.chapterNumber}</span>
                                             </div>
                                             <div class="card-body p-0 mt-2">
                                                 <h6 class="card-title fw-bold text-truncate mb-1">
                                                     <a href="chi-tiet-truyen.html?id=${manga.seriesId}" class="text-dark text-decoration-none">${manga.title}</a>
                                                 </h6>
-                                                <p class="card-text small text-muted mb-0">${manga.author || 'N/A'}</p>
+                                                <p class="card-text small text-muted font-monospace fw-bold mb-0" style="font-size: 0.75rem;">
+                                                    Đã đọc: C. ${chapter.chapterNumber} <br>
+                                                    <span class="text-secondary opacity-75">${date}</span>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            `).join('');
+                            `;
+                            }).join('');
 
                         } catch (error) {
-                            console.error("Error loading favorites:", error);
+                            console.error("Error loading history:", error);
                             container.innerHTML = '<div class="col-12 text-center py-5 text-danger">Không thể tải dữ liệu. Vui lòng kiểm tra lại!</div>';
                         }
                     });
@@ -223,7 +224,7 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/script.js"></script>
 </body>
 
 </html>

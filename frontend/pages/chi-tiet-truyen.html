@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
             background-color: var(--primary-bg);
@@ -251,7 +251,7 @@
 
                 <!-- Logo Center -->
                 <div class="col-2 text-center">
-                    <a href="index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
+                    <a href="../index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
                         Cứu Truyện
                     </a>
                 </div>
@@ -283,7 +283,6 @@
                                         dõi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
                                 </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
                                         href="dang-truyen.html">Đăng truyện</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
@@ -322,7 +321,7 @@
                         <p class="manga-alt-title mb-4">The Great Adventure of Hero (Tên Khác Đây Này)</p>
 
                         <div class="d-flex flex-wrap align-items-center mb-4 gap-3">
-                            <span class="manga-meta-item"><i class="fa-solid fa-hashtag text-warning"></i> ID: <span id="publicId">...</span></span>
+                            <span class="manga-meta-item bg-dark text-white fw-bold border border-warning"><i class="fa-solid fa-hashtag text-warning"></i> ID: <span id="publicId">...</span></span>
                             <span class="manga-meta-item"><i class="fa-solid fa-star text-warning"></i> <span id="metaRating">4.9</span></span>
                             <span class="manga-meta-item"><i class="fa-solid fa-eye text-info"></i> <span id="metaViews">12.5M</span></span>
                             <span class="manga-meta-item"><i class="fa-solid fa-heart text-danger"></i> <span id="metaFollowers">45.2K</span></span>
@@ -371,6 +370,11 @@
                 <!-- Left: Synopsis & Chapters -->
                 <div class="col-12">
                     <div class="content-card">
+                        <div id="groupInfoContainer" class="d-none align-items-center mb-3 p-3 bg-light rounded border">
+                            <i class="fa-solid fa-users text-primary me-2 fs-5"></i>
+                            <span class="fw-bold text-secondary me-2">Nhóm dịch:</span>
+                            <span id="groupNameText" class="fw-bold text-dark fs-5"></span>
+                        </div>
                         <h4 class="section-title-premium">Tóm Tắt Nội Dung</h4>
                         <p class="synopsis-text">
                             Kể từ khi bắt đầu kỷ nguyên hải tặc, vô số cướp biển đã giương buồm ra khơi để tìm kiếm kho
@@ -385,16 +389,6 @@
                     <div class="content-card">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="section-title-premium mb-0">Danh Sách Chương</h4>
-                            <div class="dropdown">
-                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle fw-bold px-3"
-                                    type="button" data-bs-toggle="dropdown">
-                                    Mới nhất trước
-                                </button>
-                                <ul class="dropdown-menu shadow border-0">
-                                    <li><a class="dropdown-item fw-medium" href="#">Mới nhất</a></li>
-                                    <li><a class="dropdown-item fw-medium" href="#">Cũ nhất</a></li>
-                                </ul>
-                            </div>
                         </div>
 
                         <div class="table-responsive">
@@ -417,10 +411,7 @@
         </div>
     </main>
 
-    <!-- Floating Chat Button-->
-    <a href="#" class="floating-chat-btn">
-        <i class="fa-brands fa-facebook-messenger"></i>
-    </a>
+
     </main>
 
     <!-- Search Overlay -->
@@ -449,8 +440,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
@@ -492,6 +483,7 @@
                 // Update Stats
                 const metaContainer = document.querySelector('.manga-meta-item').parentElement;
                 metaContainer.innerHTML = `
+                    <span class="manga-meta-item bg-dark text-white fw-bold border border-warning"><i class="fa-solid fa-hashtag text-warning"></i> ID: <span id="publicId">${manga.seriesId}</span></span>
                     <span class="manga-meta-item"><i class="fa-solid fa-star text-warning"></i> <span id="metaRating">${realRating.toFixed(1)}</span></span>
                     <span class="manga-meta-item"><i class="fa-solid fa-eye text-info"></i> ${realViews.toLocaleString()}</span>
                     <span class="manga-meta-item"><i class="fa-solid fa-heart text-danger"></i> <span id="metaFollowers">${currentFollowers.toLocaleString()}</span></span>
@@ -504,9 +496,19 @@
                     <a href="search.html?genre=${g.genreId}" class="genre-badge text-decoration-none">${(g.genreName || 'GENRE').toUpperCase()}</a>
                 `).join('');
 
-                // Update Synopsis
                 const synopsisEl = document.querySelector('.synopsis-text');
                 if (synopsisEl) synopsisEl.textContent = manga.description || 'Chưa có tóm tắt cho truyện này.';
+
+                // Update Translation Group
+                if (manga.translationGroup && manga.translationGroup.name) {
+                    const groupContainer = document.getElementById('groupInfoContainer');
+                    const groupNameText = document.getElementById('groupNameText');
+                    if (groupContainer && groupNameText) {
+                        groupNameText.textContent = manga.translationGroup.name;
+                        groupContainer.classList.remove('d-none');
+                        groupContainer.classList.add('d-flex');
+                    }
+                }
 
                 const safeSetText = (id, text) => {
                     const el = document.getElementById(id);
@@ -613,6 +615,9 @@
                     });
                 });
 
+                // Check authorization for Add Chapter button
+                const user = JSON.parse(localStorage.getItem('user'));
+            // Removed Add Chapter button logic
             } catch (error) {
                 console.error("Error loading manga details:", error);
                 document.querySelector('main').innerHTML = '<div class="container py-5"><div class="alert alert-danger">Không thể tải thông tin truyện. Vui lòng kiểm tra Server!</div></div>';
@@ -620,42 +625,9 @@
         });
 
         // Handle chapter click with lock check
-        async function handleChapterClick(chapterId, isPaid, price) {
-            if (!isPaid || price === 0) {
-                // Free chapter - go directly
-                window.location.href = `doc-truyen.html?chapterId=${chapterId}`;
-                return;
-            }
-
-            // Check if already unlocked
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Vui lòng đăng nhập để mở khoá chương trả phí!');
-                return;
-            }
-
-            try {
-                const checkResult = await ApiService.checkChapterUnlock(chapterId);
-                if (checkResult.unlocked) {
-                    // Already unlocked
-                    window.location.href = `doc-truyen.html?chapterId=${chapterId}`;
-                    return;
-                }
-
-                // Ask to unlock
-                const confirmed = confirm(`Chương này cần ${price} Xu để mở khoá.\nBạn có muốn mở khoá?`);
-                if (!confirmed) return;
-
-                const result = await ApiService.unlockChapter(chapterId);
-                if (result.unlocked) {
-                    alert(result.message + (result.newBalance !== undefined ? `\nSố dư còn: ${result.newBalance.toLocaleString()} Xu` : ''));
-                    window.location.href = `doc-truyen.html?chapterId=${chapterId}`;
-                } else {
-                    alert('Lỗi: ' + (result.message || 'Không thể mở khoá'));
-                }
-            } catch (err) {
-                alert('Lỗi: ' + (err.message || 'Không thể mở khoá chương'));
-            }
+        // Handle chapter click
+        async function handleChapterClick(chapterId) {
+            window.location.href = `doc-truyen.html?chapterId=${chapterId}`;
         }
     </script>
 </body>

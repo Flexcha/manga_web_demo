@@ -34,9 +34,9 @@
                 <div class="col-5 d-flex align-items-center gap-4 header-links">
                     <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
                     <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-decoration-none fw-bold text-uppercase">Discord</a>
-                    <a href="dang-truyen.html" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
-                    <a href="quan-ly-nhom.html" id="navManageGroup" class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
-                    <a href="quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
+                    <a href="pages/dang-truyen.html" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
+                    <a href="pages/quan-ly-nhom.html" id="navManageGroup" class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
+                    <a href="pages/quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
                 </div>
 
                 <!-- Logo Center -->
@@ -70,14 +70,13 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3"
                                 style="min-width: 220px;">
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
+                                <li><a class="dropdown-item py-2 fw-medium" href="pages/truyen-theo-doi.html">Truyện theo
                                         dõi</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
+                                <li><a class="dropdown-item py-2 fw-medium" href="pages/truyen-da-doc.html">Truyện đã đọc</a>
                                 </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
-                                        href="dang-truyen.html">Đăng truyện</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
+                                        href="pages/dang-truyen.html">Đăng truyện</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="pages/cai-dat.html">Cài đặt</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -117,7 +116,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                    <a href="truyen-moi.html" class="text-secondary fw-bold text-decoration-none"
+                    <a href="pages/truyen-moi.html" class="text-secondary fw-bold text-decoration-none"
                         style="font-size: 0.9rem;">
                         TẤT CẢ TRUYỆN <i class="fa-solid fa-chevron-right ms-1" style="font-size: 0.8rem;"></i>
                     </a>
@@ -128,16 +127,21 @@
 
     <div id="searchOverlay" class="search-overlay d-none">
         <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
-            <div class="position-relative d-flex align-items-center">
+            <div class="position-relative">
                 <input type="text" id="liveSearchInput"
-                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm pe-5" placeholder="Tìm kiếm...">
-                <button id="btnFullSearch" class="btn position-absolute end-0 me-2 text-secondary border-0 fs-4">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-                <div id="searchResults" class="search-results-container mt-2 d-none w-100" style="position: absolute; top: 100%; left: 0;">
-                    <div id="searchResultList" class="list-group shadow-sm border-0">
-                        <!-- Live search results injected by JS -->
-                    </div>
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="pages/search.html" class="text-secondary fw-bold text-decoration-none"
+                        style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                </div>
+            </div>
+            <div id="searchResults"
+                class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                <div class="list-group list-group-flush" id="searchResultList"></div>
+                <div class="bg-light p-3 border-top pb-2">
+                    <a href="pages/search.html" class="text-secondary text-decoration-none fw-bold"
+                        style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
                 </div>
             </div>
         </div>
@@ -157,17 +161,19 @@
 
             try {
                 const mangas = await ApiService.getMangas();
+                const topViewsMangas = await ApiService.getTopViewsMangas(3);
 
-                // Banner
-                const bannerMangas = mangas.slice(0, 3);
-                heroWrapper.innerHTML = bannerMangas.map(m => `
+                // Banner - Top 3 đọc nhiều nhất trong 24h
+                const bannerMangas = topViewsMangas && topViewsMangas.length > 0 ? topViewsMangas : mangas.slice(0, 3);
+                heroWrapper.innerHTML = bannerMangas.map((m, idx) => `
                     <div class="swiper-slide">
                         <div class="hero-slide-content position-relative" style="background-image: url('${getImageUrl(m.coverUrl) || ''}'); background-color: #f0f0f0;">
                             <div class="hero-overlay"></div>
                             <div class="hero-info position-absolute bottom-0 start-0 p-5 text-white w-100">
+                                <span class="badge bg-danger mb-2 p-2 px-3 fw-bold"><i class="fa-solid fa-fire me-1"></i> TOP ${idx + 1} ĐỌC NHIỀU NHẤT TRONG 24H</span>
                                 <h2 class="fw-bold mb-3 fs-3">${m.title}</h2>
                                 <p class="mb-4 text-white-50 lh-lg" style="max-width: 70%">${m.description || ''}</p>
-                                <button class="btn btn-warning px-4 py-2 fw-bold" onclick="window.location.href='chi-tiet-truyen.html?id=${m.seriesId}'">XEM THÔNG TIN</button>
+                                <button class="btn btn-warning px-4 py-2 fw-bold" onclick="window.location.href='pages/chi-tiet-truyen.html?id=${m.seriesId}'">XEM THÔNG TIN</button>
                             </div>
                         </div>
                     </div>
@@ -179,11 +185,11 @@
                         <div class="manga-card h-100">
                             <div class="card border-0 bg-transparent h-100">
                                 <div class="manga-cover rounded-3 overflow-hidden shadow-sm mb-2" style="aspect-ratio: 3/4">
-                                    <a href="chi-tiet-truyen.html?id=${m.seriesId}">
+                                    <a href="pages/chi-tiet-truyen.html?id=${m.seriesId}">
                                         <img src="${getImageUrl(m.coverUrl) || ''}" class="w-100 h-100 object-fit-cover" loading="lazy" style="background-color: #f0f0f0;">
                                     </a>
                                 </div>
-                                <h6 class="fw-bold text-truncate mb-1"><a href="chi-tiet-truyen.html?id=${m.seriesId}" class="text-dark text-decoration-none">${m.title}</a></h6>
+                                <h6 class="fw-bold text-truncate mb-1"><a href="pages/chi-tiet-truyen.html?id=${m.seriesId}" class="text-dark text-decoration-none">${m.title}</a></h6>
                             </div>
                         </div>
                     </div>

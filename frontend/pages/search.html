@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 
     <style>
         .custom-tag-pill {
@@ -87,7 +87,7 @@
 
                 <!-- Logo Center -->
                 <div class="col-2 text-center">
-                    <a href="index.html"
+                    <a href="../index.html"
                         class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
                         Cứu Truyện
                     </a>
@@ -120,7 +120,6 @@
                                         dõi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
                                 </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví của tôi</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
                                         href="dang-truyen.html">Đăng truyện</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
@@ -147,61 +146,18 @@
             <form action="#" method="GET">
                 <!-- Input Truyện -->
                 <div class="mb-3">
-                    <input type="text" class="form-control form-control-lg border-0 shadow-sm rounded-3 py-3 px-4"
-                        placeholder="Tìm kiếm truyện" style="font-size: 1.05rem;">
-                </div>
-
-                <!-- Input Thẻ -->
+                <!-- Search Input -->
                 <div class="mb-4">
-                    <input type="text" class="form-control form-control-lg border-0 shadow-sm rounded-3 py-3 px-4"
-                        placeholder="Tìm kiếm theo thẻ" style="font-size: 1.05rem;">
-
-                    <!-- Hướng dẫn Cú pháp -->
-                    <div class="mt-2 text-muted" style="font-size: 0.85rem;">
-                        Cú pháp: sử dụng các toán tử <strong>AND, OR, NOT</strong> và dấu ngoặc đơn <strong>(
-                            )</strong>.
-                        Ví dụ: <code
-                            class="bg-light px-2 py-1 rounded border text-dark ms-1">"action" AND ("adventure" OR "fantasy") AND NOT "horror"</code>
-                    </div>
+                    <input type="text" class="form-control form-control-lg border-0 shadow-sm rounded-3 py-3 px-4" id="mainSearchInput"
+                        placeholder="Tìm kiếm theo tên truyện hoặc thể loại (ví dụ: action, romance...)" style="font-size: 1.05rem;">
                 </div>
 
                 <!-- Thẻ Phổ biến -->
                 <div class="mb-4">
                     <h6 class="fw-bold text-muted mb-3" style="font-size: 0.85rem;">THẺ PHỔ BIẾN</h6>
 
-                    <div class="d-flex flex-wrap gap-2">
-
-                        <!-- MẪU VÒNG LẶP JAVA CHO RENDER THẺ (TAGS) TỪ DATABASE -->
-                        <!-- Ví dụ: <c:forEach var="tag" items="\${popularTags}"> -->
-
-                        <div class="custom-tag-pill shadow-sm">có màu <span class="tag-count">242</span></div>
-                        <div class="custom-tag-pill shadow-sm">manga <span class="tag-count">1839</span></div>
-                        <div class="custom-tag-pill shadow-sm">manhua <span class="tag-count">33</span></div>
-                        <div class="custom-tag-pill shadow-sm">manhwa <span class="tag-count">71</span></div>
-                        <div class="custom-tag-pill shadow-sm">oneshot <span class="tag-count">716</span></div>
-                        <div class="custom-tag-pill shadow-sm">tạm ngưng <span class="tag-count">48</span></div>
-                        <div class="custom-tag-pill shadow-sm">webtoon <span class="tag-count">79</span></div>
-                        <div class="custom-tag-pill shadow-sm">đang tiến hành <span class="tag-count">892</span></div>
-                        <div class="custom-tag-pill shadow-sm">đã hoàn thành <span class="tag-count">473</span></div>
-                        <div class="custom-tag-pill shadow-sm">comedy <span class="tag-count">1209</span></div>
-                        <div class="custom-tag-pill shadow-sm">romance <span class="tag-count">1078</span></div>
-                        <div class="custom-tag-pill shadow-sm">drama <span class="tag-count">944</span></div>
-                        <div class="custom-tag-pill shadow-sm">slice of life <span class="tag-count">902</span></div>
-                        <div class="custom-tag-pill shadow-sm">hài hước <span class="tag-count">867</span></div>
-                        <div class="custom-tag-pill shadow-sm">đời thường <span class="tag-count">793</span></div>
-                        <div class="custom-tag-pill shadow-sm">fantasy <span class="tag-count">686</span></div>
-                        <div class="custom-tag-pill shadow-sm">romcom <span class="tag-count">645</span></div>
-                        <div class="custom-tag-pill shadow-sm">lãng mạn <span class="tag-count">640</span></div>
-                        <div class="custom-tag-pill shadow-sm">học đường <span class="tag-count">550</span></div>
-                        <div class="custom-tag-pill shadow-sm">school life <span class="tag-count">452</span></div>
-                        <div class="custom-tag-pill shadow-sm">hành động <span class="tag-count">435</span></div>
-                        <div class="custom-tag-pill shadow-sm">shounen <span class="tag-count">401</span></div>
-                        <div class="custom-tag-pill shadow-sm">siêu nhiên <span class="tag-count">392</span></div>
-                        <div class="custom-tag-pill shadow-sm">action <span class="tag-count">389</span></div>
-                        <div class="custom-tag-pill shadow-sm">supernatural <span class="tag-count">386</span></div>
-                        <div class="custom-tag-pill shadow-sm">seinen <span class="tag-count">362</span></div>
-                        <div class="custom-tag-pill shadow-sm">tâm lý <span class="tag-count">291</span></div>
-
+                    <div class="d-flex flex-wrap gap-2" id="tagsContainer">
+                        <!-- JS content -->
                     </div>
                 </div>
 
@@ -248,13 +204,13 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const query = params.get('q');
-            const searchInput = document.querySelector('input[placeholder="Tìm kiếm truyện"]');
+            const searchInput = document.getElementById('mainSearchInput');
             const btnSubmit = document.getElementById('btnSearchPageSubmit');
             const resultsContainer = document.getElementById('searchPageResults');
             const resultList = document.getElementById('searchPageResultList');
@@ -312,6 +268,35 @@
                     btnSubmit.click();
                 }
             });
+
+            // Load Tags
+            const tagsContainer = document.getElementById('tagsContainer');
+            try {
+                const genres = await ApiService.getGenres();
+                if (genres && genres.length > 0) {
+                    tagsContainer.innerHTML = genres.map(g => `
+                        <div class="custom-tag-pill shadow-sm">${g.genreName}</div>
+                    `).join('');
+                } else {
+                    tagsContainer.innerHTML = '<span class="text-muted">Chưa có thẻ nào</span>';
+                }
+                
+                // Make tag pills interactive
+                document.querySelectorAll('.custom-tag-pill').forEach(pill => {
+                    pill.addEventListener('click', () => {
+                        const tagText = pill.textContent.trim();
+                        const currentValue = searchInput.value.trim();
+                        if (currentValue) {
+                            searchInput.value = currentValue + ' ' + tagText;
+                        } else {
+                            searchInput.value = tagText;
+                        }
+                        btnSubmit.click();
+                    });
+                });
+            } catch(e) {
+                console.error("Failed to load tags", e);
+            }
         });
     </script>
 </body>

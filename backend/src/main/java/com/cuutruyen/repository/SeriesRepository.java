@@ -17,6 +17,9 @@ public interface SeriesRepository extends JpaRepository<Series, Integer> {
     boolean existsByTitle(String title);
 
     // Search methods
-    @org.springframework.data.jpa.repository.Query("SELECT s FROM Series s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :title, '%')) AND s.approvalStatus = :status")
-    Page<Series> searchByTitle(String title, Series.ApprovalStatus status, org.springframework.data.domain.Pageable pageable);
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT s FROM Series s LEFT JOIN s.genres g WHERE (LOWER(s.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(g.genreName) LIKE LOWER(CONCAT('%', :query, '%'))) AND s.approvalStatus = :status")
+    Page<Series> searchByTitleOrGenre(String query, Series.ApprovalStatus status, org.springframework.data.domain.Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Query("SELECT s FROM Series s WHERE s.approvalStatus = :status ORDER BY s.totalViews DESC")
+    List<Series> findTopByViews(Series.ApprovalStatus status, org.springframework.data.domain.Pageable pageable);
 }

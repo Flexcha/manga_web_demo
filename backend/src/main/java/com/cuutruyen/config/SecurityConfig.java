@@ -49,13 +49,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/groups/my-group").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/groups/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/groups/request").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/groups/*/accept", "/api/groups/*/reject").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/groups/{id}/accept", "/api/groups/{id}/reject").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/groups/**").hasRole("ADMIN")
                 
                 // Transaction Endpoints
                 .requestMatchers(HttpMethod.GET, "/api/transactions/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/transactions/withdraw").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/transactions/*/approve", "/api/transactions/*/reject").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/transactions/{id}/approve", "/api/transactions/{id}/reject").hasRole("ADMIN")
                 
                 // User Endpoints
                 .requestMatchers(HttpMethod.GET, "/api/users/me/wallet").authenticated()
@@ -74,9 +74,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow Vercel frontend and local dev
+        // Allow local dev
         configuration.setAllowedOriginPatterns(Arrays.asList(
-            "https://*.vercel.app",
             "http://localhost:*",
             "http://127.0.0.1:*"
         ));

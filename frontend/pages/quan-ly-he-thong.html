@@ -19,18 +19,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
             background-color: var(--primary-bg);
         }
+
         .dashboard-card {
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
+
         .nav-tabs .nav-link {
             color: #7a6e67;
             font-weight: 600;
@@ -38,11 +40,13 @@
             border: none;
             border-bottom: 3px solid transparent;
         }
+
         .nav-tabs .nav-link.active {
             color: #f7a928;
             border-bottom: 3px solid #f7a928;
             background-color: transparent;
         }
+
         .table-custom th {
             background-color: #f8f9fa;
             color: #5c514b;
@@ -50,18 +54,20 @@
             padding: 1rem;
             border-bottom: 2px solid #e9ecef;
         }
+
         .table-custom td {
             vertical-align: middle;
             color: #4a413b;
             padding: 1rem;
             border-bottom: 1px solid #f1f3f5;
         }
+
         .stat-card {
             background: #fff;
             border-radius: 12px;
             padding: 1.5rem;
-            border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
         }
     </style>
 </head>
@@ -73,38 +79,50 @@
             <div class="row align-items-center">
                 <div class="col-5 d-flex align-items-center gap-4 header-links">
                     <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
-                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-decoration-none fw-bold text-uppercase">Discord</a>
-                    <a href="dang-truyen.html" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
-                    <a href="quan-ly-nhom.html" id="navManageGroup" class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
-                    <a href="quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
+                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank"
+                        class="text-decoration-none fw-bold text-uppercase">Discord</a>
+                    <a href="dang-truyen.html" id="navUploadManga"
+                        class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
+                    <a href="quan-ly-nhom.html" id="navManageGroup"
+                        class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
+                    <a href="quan-ly-he-thong.html" id="navSystemAdmin"
+                        class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
                 </div>
                 <div class="col-2 text-center">
-                    <a href="index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
+                    <a href="../index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
                         CỨU TRUYỆN
                     </a>
                 </div>
                 <div class="col-5 d-flex justify-content-end align-items-center gap-3">
-                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    
+                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
+                            class="fa-solid fa-magnifying-glass"></i></button>
+
                     <div id="headerGuestView" class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
+                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
+                            data-bs-target="#loginModal">Đăng nhập</button>
                         <button class="btn btn-dark fw-bold rounded-pill px-3">Đăng ký</button>
                     </div>
 
                     <div id="headerUserView" class="d-flex align-items-center gap-3 d-none">
                         <button class="btn-circular btn-icon"><i class="fa-solid fa-bell"></i></button>
                         <div class="dropdown">
-                            <button class="btn-circular btn-user fw-bold border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn-circular btn-user fw-bold border-0" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <span id="headerAvatarText">A</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo dõi</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="vi.html">Ví</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga" href="dang-truyen.html">Đăng truyện</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
+                                        dõi</a></li>
+                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
+                                </li>
+                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
+                                        href="dang-truyen.html">Đăng truyện</a></li>
                                 <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng xuất</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
+                                        xuất</a></li>
                             </ul>
                         </div>
                     </div>
@@ -125,30 +143,24 @@
                         <div class="text-secondary small fw-bold">TỔNG NHÓM</div>
                         <div class="fs-4 fw-bold" id="totalGroupsCount">...</div>
                     </div>
-                    <div class="stat-card text-center">
-                        <div class="text-secondary small fw-bold">GD TRONG NGÀY</div>
-                        <div class="fs-4 fw-bold text-success" id="totalTransactionsCount">...</div>
-                    </div>
                 </div>
             </div>
-            
+
             <div class="dashboard-card">
                 <!-- Nav tabs -->
-                <ul class="nav nav-tabs border-bottom flex-nowrap overflow-auto" id="adminTabs" role="tablist" style="white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;">
+                <ul class="nav nav-tabs border-bottom flex-nowrap overflow-auto" id="adminTabs" role="tablist"
+                    style="white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="all-groups-tab" data-bs-toggle="tab" data-bs-target="#all-groups" type="button" role="tab">Tất cả Nhóm Dịch</button>
+                        <button class="nav-link active" id="all-groups-tab" data-bs-toggle="tab"
+                            data-bs-target="#all-groups" type="button" role="tab">Tất cả Nhóm Dịch</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="all-transactions-tab" data-bs-toggle="tab" data-bs-target="#all-transactions" type="button" role="tab">Giao dịch Toàn Sàn</button>
+                        <button class="nav-link" id="group-requests-tab" data-bs-toggle="tab"
+                            data-bs-target="#group-requests" type="button" role="tab">Yêu cầu tạo nhóm</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="group-requests-tab" data-bs-toggle="tab" data-bs-target="#group-requests" type="button" role="tab">Yêu cầu tạo nhóm</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="withdrawal-requests-tab" data-bs-toggle="tab" data-bs-target="#withdrawal-requests" type="button" role="tab">Yêu cầu Rút Tiền</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="manga-mgmt-tab" data-bs-toggle="tab" data-bs-target="#manga-mgmt" type="button" role="tab">Quản trị Truyện</button>
+                        <button class="nav-link" id="manga-mgmt-tab" data-bs-toggle="tab" data-bs-target="#manga-mgmt"
+                            type="button" role="tab">Quản trị Truyện</button>
                     </li>
                 </ul>
 
@@ -174,31 +186,6 @@
                         </div>
                     </div>
 
-                    <!-- Tab All Transactions -->
-                    <div class="tab-pane fade p-0" id="all-transactions" role="tabpanel" tabindex="0">
-                        <!-- Biểu đồ giao dịch nằm trong tab -->
-                        <div class="p-4 border-bottom">
-                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-chart-line me-2 text-warning"></i>Biểu đồ Giao dịch (7 ngày gần nhất)</h6>
-                            <canvas id="transactionChart" height="80"></canvas>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-custom mb-0">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 20%">Thời gian</th>
-                                        <th style="width: 20%">Người dùng</th>
-                                        <th style="width: 30%">Loại giao dịch</th>
-                                        <th style="width: 15%">Số tiền</th>
-                                        <th style="width: 15%" class="text-end">Ghi chú</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactionsTbody">
-                                    <!-- JS sẽ render dữ liệu thực từ DB -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                     <!-- Tab Group Requests -->
                     <div class="tab-pane fade p-0" id="group-requests" role="tabpanel" tabindex="0">
                         <div class="table-responsive">
@@ -217,33 +204,14 @@
                         </div>
                     </div>
 
-
-
-                    <!-- Tab Yêu cầu Rút Tiền -->
-                    <div class="tab-pane fade p-0" id="withdrawal-requests" role="tabpanel" tabindex="0">
-                        <div class="table-responsive">
-                            <table class="table table-custom mb-0">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 15%">Thời gian</th>
-                                        <th style="width: 20%">Người dùng</th>
-                                        <th style="width: 20%">Số tiền</th>
-                                        <th style="width: 20%">Ghi chú</th>
-                                        <th style="width: 25%" class="text-end">Hành động</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="withdrawalTbody">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                     <!-- Tab Quản trị Truyện -->
                     <div class="tab-pane fade p-0" id="manga-mgmt" role="tabpanel" tabindex="0">
                         <div class="p-4 border-bottom bg-light">
-                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-trash-can me-2 text-danger"></i>Xóa truyện nhanh theo ID</h6>
+                            <h6 class="fw-bold mb-3"><i class="fa-solid fa-trash-can me-2 text-danger"></i>Xóa truyện
+                                nhanh theo ID</h6>
                             <div class="d-flex gap-2" style="max-width: 400px;">
-                                <input type="number" id="deleteMangaIdInput" class="form-control" placeholder="Nhập ID truyện (VD: 123)">
+                                <input type="number" id="deleteMangaIdInput" class="form-control"
+                                    placeholder="Nhập ID truyện (VD: 123)">
                                 <button class="btn btn-danger fw-bold" id="btnQuickDeleteManga">XÓA</button>
                             </div>
                         </div>
@@ -272,20 +240,22 @@
     <div id="searchOverlay" class="search-overlay d-none">
         <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
             <div class="position-relative">
-                <input type="text" id="liveSearchInput" class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm" style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                <input type="text" id="liveSearchInput"
+                    class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                    style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
             </div>
         </div>
-        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i class="fa-solid fa-xmark"></i></button>
+        <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                class="fa-solid fa-xmark"></i></button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/api.js"></script>
-    <script src="assets/js/script.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const totalGroupsCount = document.getElementById('totalGroupsCount');
-            const totalTransactionsCount = document.getElementById('totalTransactionsCount');
             const allGroupsTbody = document.querySelector('#all-groups tbody');
             const groupRequestsTbody = document.querySelector('#group-requests tbody');
 
@@ -337,36 +307,10 @@
                         `).join('');
                     }
 
-                    // Fetch & render transactions from DB
-                    const transactionsTbody = document.getElementById('transactionsTbody');
-                    try {
-                        const transactions = await ApiService.getAllTransactions();
-                        if (transactions.length === 0) {
-                            transactionsTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Chưa có giao dịch nào</td></tr>';
-                        } else {
-                            const typeMap = { deposit: 'Nạp tiền', purchase: 'Mở khóa chương', refund: 'Hoàn tiền' };
-                            transactionsTbody.innerHTML = transactions.map(tx => `
-                                <tr>
-                                    <td class="small text-muted">${formatDate(tx.createdAt)}</td>
-                                    <td><span class="fw-bold">${tx.wallet && tx.wallet.user ? tx.wallet.user.username : 'N/A'}</span></td>
-                                    <td>${typeMap[tx.type] || tx.type}</td>
-                                    <td><span class="${tx.type === 'deposit' ? 'text-success' : 'text-danger'} fw-bold">${tx.type === 'deposit' ? '+' : '-'}${tx.amount.toLocaleString()} Xu</span></td>
-                                    <td class="text-end"><span class="text-muted small">${tx.note || ''}</span></td>
-                                </tr>
-                            `).join('');
-                        }
-
                         // Update stats
                         if (totalGroupsCount) {
                             totalGroupsCount.textContent = allGroups.filter(g => g.status === 'ACTIVE').length;
                         }
-                        if (totalTransactionsCount) {
-                            totalTransactionsCount.textContent = transactions.length;
-                        }
-                    } catch (txErr) {
-                        console.error("Lỗi tải giao dịch:", txErr);
-                        transactionsTbody.innerHTML = '<tr><td colspan="5" class="text-danger text-center">Lỗi tải giao dịch</td></tr>';
-                    }
 
                 } catch (err) {
                     console.error("Lỗi khi tải dữ liệu nhóm:", err);
@@ -426,56 +370,6 @@
 
 
 
-            // ==== YÊU CẦU RÚT TIỀN ====
-            const withdrawalTbody = document.getElementById('withdrawalTbody');
-            const loadWithdrawals = async () => {
-                try {
-                    const withdrawals = await ApiService.getPendingWithdrawals();
-                    if (withdrawals.length === 0) {
-                        withdrawalTbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Không có yêu cầu rút tiền</td></tr>';
-                    } else {
-                        withdrawalTbody.innerHTML = withdrawals.map(tx => `
-                            <tr>
-                                <td class="small text-muted">${formatDate(tx.createdAt)}</td>
-                                <td><span class="fw-bold">${tx.wallet && tx.wallet.user ? tx.wallet.user.username : 'N/A'}</span></td>
-                                <td><span class="text-danger fw-bold">${tx.amount.toLocaleString()} Xu</span></td>
-                                <td class="small">${tx.note || ''}</td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-success fw-bold btn-approve-withdrawal" data-id="${tx.txId}">DUYỆT</button>
-                                    <button class="btn btn-sm btn-outline-danger fw-bold ms-1 btn-reject-withdrawal" data-id="${tx.txId}">TỪ CHỐI</button>
-                                </td>
-                            </tr>
-                        `).join('');
-                    }
-                } catch (err) {
-                    withdrawalTbody.innerHTML = '<tr><td colspan="5" class="text-danger text-center">Lỗi tải dữ liệu</td></tr>';
-                }
-            };
-            await loadWithdrawals();
-
-            withdrawalTbody.addEventListener('click', async (e) => {
-                const approveBtn = e.target.closest('.btn-approve-withdrawal');
-                const rejectBtn = e.target.closest('.btn-reject-withdrawal');
-                if (approveBtn || rejectBtn) {
-                    const btn = approveBtn || rejectBtn;
-                    const txId = btn.getAttribute('data-id');
-                    try {
-                        btn.disabled = true;
-                        if (approveBtn) {
-                            await ApiService.approveWithdrawal(txId);
-                            alert('Đã duyệt yêu cầu rút tiền!');
-                        } else {
-                            await ApiService.rejectWithdrawal(txId);
-                            alert('Đã từ chối và hoàn tiền!');
-                        }
-                        await loadWithdrawals();
-                        await loadData(); // Refresh transactions
-                    } catch (err) {
-                        alert("Lỗi: " + err.message);
-                        btn.disabled = false;
-                    }
-                }
-            });
 
             // ==== QUẢN TRỊ TRUYỆN ====
             const allMangaMgmtTbody = document.getElementById('allMangaMgmtTbody');
@@ -539,71 +433,9 @@
                     deleteMangaIdInput.value = '';
                 });
             }
-
-            // ==== BIỂU ĐỒ GIAO DỊCH ====
-            try {
-                const allTx = await ApiService.getAllTransactions();
-                const last7Days = [];
-                const depositData = [];
-                const withdrawData = [];
-                for (let i = 6; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    const dateStr = d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
-                    last7Days.push(dateStr);
-
-                    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-                    const dayEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
-
-                    const dayDeposits = allTx.filter(tx => {
-                        const txDate = new Date(tx.createdAt);
-                        return txDate >= dayStart && txDate < dayEnd && tx.type === 'deposit';
-                    }).reduce((sum, tx) => sum + tx.amount, 0);
-
-                    const dayWithdraws = allTx.filter(tx => {
-                        const txDate = new Date(tx.createdAt);
-                        return txDate >= dayStart && txDate < dayEnd && 
-                            (tx.type === 'withdrawal_approved' || tx.type === 'withdrawal_pending' || tx.type === 'purchase');
-                    }).reduce((sum, tx) => sum + tx.amount, 0);
-
-                    depositData.push(dayDeposits);
-                    withdrawData.push(dayWithdraws);
-                }
-
-                const ctx = document.getElementById('transactionChart');
-                if (ctx && typeof Chart !== 'undefined') {
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: last7Days,
-                            datasets: [
-                                {
-                                    label: 'Nạp tiền (Xu)',
-                                    data: depositData,
-                                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
-                                    borderRadius: 6
-                                },
-                                {
-                                    label: 'Chi tiêu / Rút (Xu)',
-                                    data: withdrawData,
-                                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                                    borderRadius: 6
-                                }
-                            ]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: { legend: { position: 'top' } },
-                            scales: {
-                                y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString() + ' Xu' } }
-                            }
-                        }
-                    });
-                }
-            } catch (chartErr) {
-                console.error("Lỗi tạo biểu đồ:", chartErr);
-            }
         });
+
     </script>
 </body>
+
 </html>
