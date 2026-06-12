@@ -1,0 +1,95 @@
+erDiagram
+    User ||--o{ TranslationGroup : "leader of"
+    User ||--o{ Series : "uploads"
+    User ||--o{ Comment : "writes"
+    User ||--o{ Favorite : "has"
+    User ||--o{ Rating : "rates"
+    User ||--o{ ReadingProgress : "tracks"
+    User ||--o{ Report : "reports"
+    User ||--o{ Notification : "receives"
+    TranslationGroup ||--o{ Series : "owns"
+    Series ||--o{ Chapter : "contains"
+    Series ||--o{ Comment : "has"
+    Series ||--o{ Favorite : "is favorited"
+    Series ||--o{ Rating : "is rated"
+    Series ||--o{ Report : "is reported"
+    Series }o--o{ Genre : "belongs to"
+    Series }o--o{ Author : "written by"
+    Chapter ||--o{ Page : "contains"
+    Chapter ||--o{ ReadingProgress : "is read"
+
+    User {
+        int user_id PK
+        string username
+        string email
+        string role
+        string status
+        int group_id FK
+    }
+    TranslationGroup {
+        int group_id PK
+        string name
+        int leader_id FK
+    }
+    Series {
+        int series_id PK
+        string title
+        string status
+        string approval_status
+        int uploaded_by FK
+        int group_id FK
+    }
+    Chapter {
+        int chapter_id PK
+        int series_id FK
+        float chapter_number
+        string title
+    }
+    Page {
+        int page_id PK
+        int chapter_id FK
+        int page_number
+        string image_url
+    }
+    Comment {
+        int comment_id PK
+        int user_id FK
+        int series_id FK
+        int chapter_id FK
+        string content
+    }
+    Favorite {
+        int user_id PK,FK
+        int series_id PK,FK
+    }
+    Rating {
+        int user_id PK,FK
+        int series_id PK,FK
+        int score
+    }
+    Report {
+        int report_id PK
+        int reporter_id FK
+        string reason
+        string status
+    }
+    Genre {
+        int genre_id PK
+        string genre_name
+    }
+    Author {
+        int author_id PK
+        string name
+    }
+    Notification {
+        int notification_id PK
+        int user_id FK
+        string message
+        boolean is_read
+    }
+    Menu {
+        int menu_id PK
+        string title
+        string url
+        string roles
+    }
