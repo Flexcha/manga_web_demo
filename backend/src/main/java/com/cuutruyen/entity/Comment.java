@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "Comments")
@@ -28,9 +30,11 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "parent_comment_id")
+    @JsonBackReference
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Comment> replies;
 
     @Column(nullable = false, columnDefinition = "TEXT")

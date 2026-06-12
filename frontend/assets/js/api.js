@@ -2,10 +2,21 @@
  * API Service for CuuTruyen Platform
  * Handles all network requests to the Backend API
  */
+const protocol = window.location.protocol;
+const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'localhost:8080' : window.location.host;
 const API_CONFIG = {
-    BASE_URL: "http://localhost:8080/api",
+    BASE_URL: `${protocol}//${host}/api`,
     TIMEOUT: 5000
 };
+
+// Global utility for XSS prevention
+window.escapeHTML = function(str) {
+    if (str === null || str === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+};
+const escapeHTML = window.escapeHTML;
 
 // Helper function to construct image URLs
 window.getImageUrl = (coverUrl) => {
@@ -38,7 +49,10 @@ const ApiService = {
 
         try {
             const token = localStorage.getItem('token');
-            const headers = { ...options.headers };
+            const headers = { 
+                'Accept': 'application/json',
+                ...options.headers 
+            };
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
@@ -201,9 +215,7 @@ const ApiService = {
         return await response.json();
     },
 
-    async getMangaDetail(seriesId) {
-        return this.fetchWithTimeout(`/manga/${seriesId}`);
-    },
+
 
     async getChapter(chapterId) {
         return this.fetchWithTimeout(`/chapter/${chapterId}`);
@@ -289,22 +301,7 @@ const ApiService = {
         });
     },
 
-    // USER & AUTH APIs
-    async login(username, password) {
-        return this.fetchWithTimeout("/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password })
-        });
-    },
 
-    async register(userData) {
-        return this.fetchWithTimeout("/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData)
-        });
-    },
 
     async getProfile() {
         return this.fetchWithTimeout("/users/me");
@@ -339,19 +336,11 @@ const ApiService = {
         return this.fetchWithTimeout("/me/favorites");
     },
 
-    async toggleFavorite(seriesId) {
-        return this.fetchWithTimeout(`/me/favorites/${seriesId}`, {
-            method: "POST"
-        });
-    },
-
     async getMeHistory() {
         return this.fetchWithTimeout("/me/history");
     },
 
-
-
-    // GROUP APIs
+    // GROUP APIs (cont.)
     async getGroupInfo(groupId) {
         return this.fetchWithTimeout(`/groups/${groupId}`);
     },

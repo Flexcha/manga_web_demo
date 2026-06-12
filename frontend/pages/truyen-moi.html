@@ -56,75 +56,7 @@
                     <button class="btn btn-light fw-bold text-dark px-4 border shadow-sm" id="nextPageBtn">Trang tiếp theo <i class="fa-solid fa-chevron-right ms-2"></i></button>
                 </div>
 
-                <script>
-                    let currentPage = 0; // Backend uses 0-based index
-                    const pageSize = 20;
 
-                    async function renderMangas(page) {
-                        const container = document.getElementById('mangaList');
-                        container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-warning" role="status"></div></div>';
-                        
-                        try {
-                            const data = await ApiService.getAllMangas(page, pageSize);
-                            const mangas = data.content;
-                            const totalPages = data.totalPages;
-                            
-                            if (mangas.length === 0) {
-                                container.innerHTML = '<div class="col-12 text-center py-5 text-muted">Chưa có truyện nào được đăng</div>';
-                            } else {
-                                container.innerHTML = mangas.map(m => `
-                                    <div class="col">
-                                        <div class="manga-card h-100">
-                                            <div class="card border-0 bg-transparent h-100">
-                                                <div class="manga-cover rounded-3 overflow-hidden position-relative shadow-sm mb-2" style="aspect-ratio: 3/4">
-                                                    <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="d-block w-100 h-100">
-                                                        <img src="${getImageUrl(m.coverUrl) || ''}"
-                                                            alt="${m.title}" class="w-100 h-100 object-fit-cover" style="background-color: #f0f0f0;">
-                                                    </a>
-                                                    ${m.latestChapter ? `<span class="badge position-absolute top-0 start-0 m-2 rounded-pill chapter-badge">C.${m.latestChapter}</span>` : ''}
-                                                </div>
-                                                <div class="card-body p-0 mt-2">
-                                                    <h6 class="card-title fw-bold text-truncate mb-1">
-                                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="text-dark text-decoration-none">${m.title}</a>
-                                                    </h6>
-                                                    <p class="card-text small text-muted mb-0" style="font-size: 0.75rem;">
-                                                        ${m.status || 'Đang cập nhật'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `).join('');
-                            }
-                            
-                            document.getElementById('prevPageBtn').disabled = (page === 0);
-                            document.getElementById('nextPageBtn').disabled = (page >= totalPages - 1);
-                            
-                        } catch (err) {
-                            container.innerHTML = '<div class="col-12 text-center py-5 text-danger">Lỗi tải dữ liệu. Vui lòng thử lại sau.</div>';
-                            console.error(err);
-                        }
-                    }
-
-                    document.getElementById('nextPageBtn').addEventListener('click', function() {
-                        currentPage++;
-                        renderMangas(currentPage);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-
-                    document.getElementById('prevPageBtn').addEventListener('click', function() {
-                        if (currentPage > 0) {
-                            currentPage--;
-                            renderMangas(currentPage);
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-                    });
-
-                    // Initial load
-                    document.addEventListener('DOMContentLoaded', () => {
-                        renderMangas(currentPage);
-                    });
-                </script>
 
             </section>
         </div>
@@ -171,6 +103,75 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/script.js"></script>
+    <script>
+        let currentPage = 0; // Backend uses 0-based index
+        const pageSize = 20;
+
+        async function renderMangas(page) {
+            const container = document.getElementById('mangaList');
+            container.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-warning" role="status"></div></div>';
+            
+            try {
+                const data = await ApiService.getAllMangas(page, pageSize);
+                const mangas = data.content;
+                const totalPages = data.totalPages;
+                
+                if (mangas.length === 0) {
+                    container.innerHTML = '<div class="col-12 text-center py-5 text-muted">Chưa có truyện nào được đăng</div>';
+                } else {
+                    container.innerHTML = mangas.map(m => `
+                        <div class="col">
+                            <div class="manga-card h-100">
+                                <div class="card border-0 bg-transparent h-100">
+                                    <div class="manga-cover rounded-3 overflow-hidden position-relative shadow-sm mb-2" style="aspect-ratio: 3/4">
+                                        <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="d-block w-100 h-100">
+                                            <img src="${getImageUrl(m.coverUrl) || ''}"
+                                                alt="${m.title}" class="w-100 h-100 object-fit-cover" style="background-color: #f0f0f0;">
+                                        </a>
+                                        ${m.latestChapter ? `<span class="badge position-absolute top-0 start-0 m-2 rounded-pill chapter-badge">C.${m.latestChapter}</span>` : ''}
+                                    </div>
+                                    <div class="card-body p-0 mt-2">
+                                        <h6 class="card-title fw-bold text-truncate mb-1">
+                                            <a href="chi-tiet-truyen.html?id=${m.seriesId}" class="text-dark text-decoration-none">${m.title}</a>
+                                        </h6>
+                                        <p class="card-text small text-muted mb-0" style="font-size: 0.75rem;">
+                                            ${m.status || 'Đang cập nhật'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+                
+                document.getElementById('prevPageBtn').disabled = (page === 0);
+                document.getElementById('nextPageBtn').disabled = (page >= totalPages - 1);
+                
+            } catch (err) {
+                container.innerHTML = '<div class="col-12 text-center py-5 text-danger">Lỗi tải dữ liệu. Vui lòng thử lại sau.</div>';
+                console.error(err);
+            }
+        }
+
+        document.getElementById('nextPageBtn').addEventListener('click', function() {
+            currentPage++;
+            renderMangas(currentPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 0) {
+                currentPage--;
+                renderMangas(currentPage);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMangas(currentPage);
+        });
+    </script>
 </body>
 
 </html>

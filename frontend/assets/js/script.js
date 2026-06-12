@@ -36,7 +36,7 @@ const injectAuthComponents = () => {
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label class="form-label small fw-bold text-muted">Tên tài khoản</label>
-                                <input type="text" id="loginUsername" class="form-control auth-input" placeholder="admin, uploader, translator...">
+                                <input type="text" id="loginUsername" class="form-control auth-input" placeholder="Nhập tên tài khoản">
                             </div>
                             <div class="mb-4">
                                 <label class="form-label small fw-bold text-muted">Mật khẩu</label>
@@ -45,10 +45,7 @@ const injectAuthComponents = () => {
                             <button id="btnSubmitLogin" class="btn-auth-submit">ĐĂNG NHẬP</button>
                             <div class="mt-4 text-center">
                                 <p class="text-muted small">Chưa có tài khoản? <a href="#" class="text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký ngay</a></p>
-                                <hr>
-                                <p class="text-muted border p-2 rounded bg-light" style="font-size: 0.75rem">
-                                    <strong>Gợi ý:</strong> admin/admin123, uploader/upload123, translator/trans123, user/user123
-                                </p>
+
                             </div>
                         </div>
                     </div>
@@ -266,7 +263,8 @@ const injectHeaderComponent = () => {
                     href = pagesPath + href;
                 }
                 const activeClass = currentPath.includes(menu.url.split('/').pop()) ? 'text-warning' : '';
-                leftMenuHTML += `\n                        <a href="${href}" class="text-decoration-none fw-bold text-uppercase ${activeClass}">${menu.title}</a>`;
+                const safeTitle = window.escapeHTML ? window.escapeHTML(menu.title) : menu.title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                leftMenuHTML += `\n                        <a href="${href}" class="text-decoration-none fw-bold text-uppercase ${activeClass}">${safeTitle}</a>`;
             }
         });
 
@@ -420,15 +418,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             if (searchResultList) {
                                 if (matches.length > 0) {
-                                    searchResultList.innerHTML = matches.map(m => `
+                                    searchResultList.innerHTML = matches.map(m => {
+                                        const safeTitle = window.escapeHTML ? window.escapeHTML(m.title) : String(m.title).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                                        const safeType = window.escapeHTML ? window.escapeHTML(m.seriesType || 'Manga') : String(m.seriesType || 'Manga').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                                        return `
                                         <a href="${window.location.pathname.includes('/pages/') ? '' : 'pages/'}chi-tiet-truyen.html?id=${m.seriesId}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 p-3">
                                              <img src="${getImageUrl(m.coverUrl)}" alt="Cover" style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px;">
                                              <div>
-                                                 <h6 class="mb-1 fw-bold text-dark">${m.title}</h6>
-                                                 <small class="text-muted">${m.seriesType || 'Manga'}</small>
+                                                 <h6 class="mb-1 fw-bold text-dark">${safeTitle}</h6>
+                                                 <small class="text-muted">${safeType}</small>
                                              </div>
                                          </a>
-                                    `).join('');
+                                    `;}).join('');
                                 } else {
                                     searchResultList.innerHTML = `<div class="p-3 text-center text-muted">Không tìm thấy kết quả nào cho "${val}"</div>`;
                                 }

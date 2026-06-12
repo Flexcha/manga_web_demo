@@ -125,12 +125,14 @@ public class MangaController {
     }
 
     @PostMapping("/{id}/favorite")
-    public ResponseEntity<Series> toggleFavorite(@PathVariable Integer id, @RequestParam boolean isFollowing) {
+    public ResponseEntity<?> toggleFavorite(@PathVariable Integer id, @RequestParam boolean isFollowing, Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).build();
         return ResponseEntity.ok(mangaService.toggleFavorite(id, isFollowing));
     }
 
     @PostMapping("/{id}/rate")
-    public ResponseEntity<Series> rateManga(@PathVariable Integer id, @RequestParam int rating) {
+    public ResponseEntity<?> rateManga(@PathVariable Integer id, @RequestParam int rating, Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).build();
         return ResponseEntity.ok(mangaService.rateManga(id, rating));
     }
 
@@ -145,6 +147,7 @@ public class MangaController {
     public ResponseEntity<?> approveManga(@PathVariable Integer id, Authentication auth) {
         if (auth == null) return ResponseEntity.status(401).build();
         User user = userRepository.findByUsername(auth.getName()).orElse(null);
+        if (user == null) return ResponseEntity.status(401).build();
         Series series = mangaService.getMangaById(id);
         
         boolean isAdmin = user.getRole() == User.Role.admin;
@@ -165,6 +168,7 @@ public class MangaController {
     public ResponseEntity<?> rejectManga(@PathVariable Integer id, Authentication auth) {
         if (auth == null) return ResponseEntity.status(401).build();
         User user = userRepository.findByUsername(auth.getName()).orElse(null);
+        if (user == null) return ResponseEntity.status(401).build();
         Series series = mangaService.getMangaById(id);
         
         boolean isAdmin = user.getRole() == User.Role.admin;
@@ -181,7 +185,21 @@ public class MangaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteManga(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteManga(@PathVariable Integer id, Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).build();
+        User user = userRepository.findByUsername(auth.getName()).orElse(null);
+        if (user == null) return ResponseEntity.status(401).build();
+        
+        Series series = mangaService.getMangaById(id);
+        if (series == null) return ResponseEntity.notFound().build();
+        
+        boolean isAdmin = user.getRole() == User.Role.admin;
+        boolean isUploader = series.getUploadedBy() != null && series.getUploadedBy().getUserId().equals(user.getUserId());
+        
+        if (!isAdmin && !isUploader) {
+            return ResponseEntity.status(403).build();
+        }
+        
         mangaService.deleteManga(id);
         return ResponseEntity.noContent().build();
     }

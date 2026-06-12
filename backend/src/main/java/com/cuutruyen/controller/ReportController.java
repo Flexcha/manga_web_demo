@@ -26,9 +26,14 @@ public class ReportController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        String entityType = (String) payload.get("entityType");
+        if (entityType == null || !java.util.List.of("series", "manga", "comment", "user", "chapter").contains(entityType.toLowerCase())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Loại báo cáo không hợp lệ"));
+        }
+
         Report report = new Report();
         report.setUser(user);
-        report.setEntityType((String) payload.get("entityType"));
+        report.setEntityType(entityType.toLowerCase());
         report.setEntityId(Integer.valueOf(payload.get("entityId").toString()));
         report.setReason((String) payload.get("reason"));
         report.setStatus("PENDING");

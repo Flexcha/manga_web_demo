@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
@@ -11,8 +13,16 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
     // Stable key for development. In production, this should come from environment variables.
-    private final String SECRET_STRING = "cuutruyen_platform_very_long_secret_key_for_jwt_signing_2026";
-    private final Key key = Keys.hmacShaKeyFor(SECRET_STRING.getBytes());
+    @Value("${jwt.secret:cuutruyen_platform_very_long_secret_key_for_jwt_signing_2026}")
+    private String jwtSecret;
+
+    private Key key;
+    
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
     private final int jwtExpirationMs = 86400000; // 24 hours
 
     public String generateToken(String username, String role) {

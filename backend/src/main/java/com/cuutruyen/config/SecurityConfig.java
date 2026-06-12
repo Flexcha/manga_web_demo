@@ -32,8 +32,15 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Admin Endpoints
+                .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/manga/admin").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/comment/all").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/comment/*/admin").hasRole("ADMIN")
+                
                 // Public Endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/ai/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/manga/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/chapter/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/comment/**").permitAll()
@@ -51,11 +58,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/groups/**").hasRole("ADMIN")
                 
                 // User Endpoints
-                
-                // Admin Endpoints
-                .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/comment/all").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/comment/*/admin").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/users/*/role").hasRole("ADMIN")
                 
                 // Report Endpoints
                 .requestMatchers(HttpMethod.POST, "/api/reports").authenticated()

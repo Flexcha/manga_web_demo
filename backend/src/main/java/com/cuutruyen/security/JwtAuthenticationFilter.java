@@ -1,5 +1,7 @@
 package com.cuutruyen.security;
 
+import com.cuutruyen.entity.User;
+import com.cuutruyen.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +23,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -41,20 +44,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             if (jwtUtils.validateToken(jwt)) {
                 username = jwtUtils.getUsernameFromToken(jwt);
-                String roleStr = jwtUtils.getRoleFromToken(jwt);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + (roleStr != null ? roleStr.toUpperCase() : "USER")))
-                    );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // Verify user exists, is active, and get current role from DB
+                    User user = userRepository.findByUsername(username).orElse(null);
+                    if (user != null && user.isEnabled() && user.isAccountNonLocked()) {
+                        String currentRole = user.getRole().name().toUpperCase();
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                username,
+                                null,
+                                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + currentRole))
+                        );
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                    }
+                    // If user is banned/inactive/not found, authentication is NOT set → treated as anonymous
                 }
             }
         } catch (Exception e) {
-            // Token invalid or other error - just continue
+            // Token invalid or other error - just continue as anonymous
         }
         
         filterChain.doFilter(request, response);

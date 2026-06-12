@@ -131,6 +131,7 @@
                         <button class="nav-link" id="approval-tab" data-bs-toggle="tab" data-bs-target="#approval"
                             type="button" role="tab">Duyệt truyện <span class="badge rounded-pill bg-danger ms-1"
                                 id="pendingBadge">0</span></button>
+                    </li>
                 </ul>
 
                 <!-- Tab panes -->
@@ -194,6 +195,8 @@
                                     <!-- JS sẽ render dữ liệu thực từ DB -->
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -383,8 +386,10 @@
 
             const getImageUrl = (url) => {
                 if (!url) return null;
+                if (window.getImageUrl) return window.getImageUrl(url);
                 if (url.startsWith('http')) return url;
-                return 'http://localhost:8080' + url;
+                const serverUrl = (typeof API_CONFIG !== 'undefined' && API_CONFIG.BASE_URL) ? API_CONFIG.BASE_URL.replace('/api', '') : 'http://localhost:8080';
+                return serverUrl + (url.startsWith('/') ? url : '/' + url);
             };
 
             // ==== LOAD NHÓM CỦA USER HOẶC THEO PARAM ====

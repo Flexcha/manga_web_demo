@@ -49,6 +49,14 @@ public class AuthService {
             throw new RuntimeException("Mật khẩu không chính xác!");
         }
 
+        if (!user.isEnabled()) {
+            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa!");
+        }
+
+        if (!user.isAccountNonLocked()) {
+            throw new RuntimeException("Tài khoản đã bị khóa!");
+        }
+
         String token = jwtUtils.generateToken(user.getUsername(), user.getRole().name());
         return new AuthResponse(token, user.getUserId(), user.getUsername(), user.getRole().name());
     }

@@ -514,17 +514,20 @@
                     if (comments.length === 0) {
                         commentList.innerHTML = '<div class="text-center text-secondary py-5">Chưa có bình luận nào.</div>';
                     } else {
-                        commentList.innerHTML = comments.map(c => `
+                        commentList.innerHTML = comments.map(c => {
+                            const safeAuthor = window.escapeHTML ? window.escapeHTML(c.user ? c.user.username : 'Ẩn danh') : String(c.user ? c.user.username : 'Ẩn danh').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            const safeContent = window.escapeHTML ? window.escapeHTML(c.content) : String(c.content).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            return `
                             <div class="comment-item">
-                                <div class="comment-author">${c.user ? c.user.username : 'Ẩn danh'}</div>
-                                <div class="comment-content">${c.content}</div>
+                                <div class="comment-author">${safeAuthor}</div>
+                                <div class="comment-content">${safeContent}</div>
                                 <div class="comment-meta">
                                     <span>${new Date(c.createdAt).toLocaleDateString()}</span>
                                     <a href="#" class="text-decoration-none text-secondary">Trả lời</a>
                                     <a href="#" class="text-decoration-none text-danger" onclick="showReportModal('comment', ${c.commentId}); return false;"><i class="fa-solid fa-flag"></i> Báo cáo</a>
                                 </div>
                             </div>
-                        `).join('');
+                        `;}).join('');
                     }
 
                     // Populate Selector & Navigation
@@ -623,17 +626,20 @@
                 if (comments.length === 0) {
                     commentList.innerHTML = '<div class="text-center text-secondary py-5">Chưa có bình luận nào.</div>';
                 } else {
-                    commentList.innerHTML = comments.map(c => `
+                    commentList.innerHTML = comments.map(c => {
+                        const safeAuthor = window.escapeHTML ? window.escapeHTML(c.user ? c.user.username : 'Ẩn danh') : String(c.user ? c.user.username : 'Ẩn danh').replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        const safeContent = window.escapeHTML ? window.escapeHTML(c.content) : String(c.content).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                        return `
                         <div class="comment-item">
-                            <div class="comment-author">${c.user ? c.user.username : 'Ẩn danh'}</div>
-                            <div class="comment-content">${c.content}</div>
+                            <div class="comment-author">${safeAuthor}</div>
+                            <div class="comment-content">${safeContent}</div>
                             <div class="comment-meta">
                                 <span>${new Date(c.createdAt).toLocaleDateString()}</span>
                                 <a href="#" class="text-decoration-none text-secondary">Trả lời</a>
                                 <a href="#" class="text-decoration-none text-danger" onclick="showReportModal('comment', ${c.commentId}); return false;"><i class="fa-solid fa-flag"></i> Báo cáo</a>
                             </div>
                         </div>
-                    `).join('');
+                    `;}).join('');
                 }
                 document.getElementById('commentCount').textContent = comments.length;
             }

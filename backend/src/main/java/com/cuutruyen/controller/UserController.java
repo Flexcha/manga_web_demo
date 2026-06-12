@@ -39,7 +39,15 @@ public class UserController {
         if (auth == null) return ResponseEntity.status(401).body("Unauthorized");
         User user = userRepository.findByUsername(auth.getName()).orElse(null);
         if (user == null) return ResponseEntity.badRequest().body("User not found");
-        return ResponseEntity.ok(user);
+        Map<String, Object> userDto = Map.of(
+            "userId", user.getUserId(),
+            "username", user.getUsername(),
+            "email", user.getEmail() != null ? user.getEmail() : "",
+            "role", user.getRole(),
+            "avatarUrl", user.getAvatarUrl() != null ? user.getAvatarUrl() : "",
+            "groupId", user.getGroupId() != null ? user.getGroupId() : -1
+        );
+        return ResponseEntity.ok(userDto);
     }
 
     @Autowired

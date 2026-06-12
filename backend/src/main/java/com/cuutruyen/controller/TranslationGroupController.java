@@ -30,7 +30,9 @@ public class TranslationGroupController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TranslationGroup> getGroupById(@PathVariable Integer id) {
-        return ResponseEntity.ok(groupRepository.findById(id).orElse(null));
+        TranslationGroup group = groupRepository.findById(id).orElse(null);
+        if (group == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(group);
     }
 
     // Lấy nhóm dịch của user đang đăng nhập
