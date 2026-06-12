@@ -237,67 +237,7 @@
 
 <body>
     <!-- Bắt đầu Header -->
-    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center">
-                <!-- Navigation Left -->
-                <div class="col-5 d-flex align-items-center gap-4 header-links">
-                    <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
-                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-decoration-none fw-bold text-uppercase">Discord</a>
-                    <a href="dang-truyen.html" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
-                    <a href="quan-ly-nhom.html" id="navManageGroup" class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
-                    <a href="quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
-                </div>
-
-                <!-- Logo Center -->
-                <div class="col-2 text-center">
-                    <a href="../index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
-                        Cứu Truyện
-                    </a>
-                </div>
-
-                <!-- Action Icons Right -->
-                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
-                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
-
-                    <!-- Guest View -->
-                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Đăng nhập</button>
-                        <button class="btn btn-dark fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#registerModal">Đăng ký</button>
-                    </div>
-
-                    <!-- User View -->
-                    <div id="headerUserView" class="d-none align-items-center gap-3">
-                        <button class="btn-circular btn-icon"><i class="fa-regular fa-bell"></i></button>
-                        <div class="dropdown">
-                            <button class="btn-circular btn-user fw-bold border-0" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <span id="headerAvatarText">U</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3"
-                                style="min-width: 220px;">
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
-                                        dõi</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
-                                </li>
-                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
-                                        href="dang-truyen.html">Đăng truyện</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
-                                        xuất</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div id="app-header"></div>
 
     <!-- Main Content: Premium Hero Section -->
     <section class="manga-hero-section">
@@ -342,6 +282,7 @@
                                     class="fa-solid fa-book-open me-2"></i> Đọc từ đầu</a>
                             <button class="action-btn btn-follow"><i class="fa-regular fa-heart me-2"></i> Theo dõi
                                 truyện</button>
+                            <button class="action-btn bg-danger text-white border-0" onclick="showReportModal('manga', new URLSearchParams(window.location.search).get('id') || 1)"><i class="fa-solid fa-flag me-2"></i> Báo cáo</button>
                         </div>
 
                         <!-- Rating System -->
@@ -439,6 +380,30 @@
                 class="fa-solid fa-xmark"></i></button>
     </div>
 
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" data-bs-theme="dark">
+      <div class="modal-dialog">
+        <div class="modal-content text-white" style="background-color: var(--primary-bg);">
+          <div class="modal-header border-secondary">
+            <h5 class="modal-title" id="reportModalTitle"><i class="fa-solid fa-flag text-danger me-2"></i> Báo Cáo Vi Phạm</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="reportEntityType">
+            <input type="hidden" id="reportEntityId">
+            <div class="mb-3">
+              <label for="reportReason" class="form-label text-secondary fw-bold">Lý do báo cáo</label>
+              <textarea class="form-control bg-dark text-white border-secondary" id="reportReason" rows="3" placeholder="Ví dụ: Truyện có nội dung phản cảm, sai chính tả, lỗi ảnh..." required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-secondary">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-danger fw-bold" id="btnSubmitReport">Gửi Báo Cáo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/script.js"></script>
@@ -461,8 +426,16 @@
 
                 const serverUrl = API_CONFIG.BASE_URL.replace('/api', '');
                 const finalCoverUrl = getImageUrl(manga.coverUrl);
+                const finalBannerUrl = manga.bannerUrl ? getImageUrl(manga.bannerUrl) : finalCoverUrl;
 
-                document.querySelector('.manga-hero-bg').style.backgroundImage = `url('${finalCoverUrl}')`;
+                const heroBg = document.querySelector('.manga-hero-bg');
+                heroBg.style.backgroundImage = `url('${finalBannerUrl}')`;
+                if (manga.bannerUrl) {
+                    heroBg.style.filter = 'brightness(0.5)';
+                } else {
+                    heroBg.style.filter = 'blur(40px) brightness(0.4)';
+                }
+
                 document.querySelector('.manga-detail-cover img').src = finalCoverUrl;
 
                 // Lấy dữ liệu thật từ DB
@@ -471,12 +444,6 @@
                 // Update Images
                 const coverImg = document.getElementById('mangaCover');
                 if (coverImg) coverImg.src = getImageUrl(manga.coverUrl);
-                const heroBg = document.getElementById('heroBg');
-                if (heroBg && manga.coverUrl) {
-                    heroBg.style.backgroundImage = `url('${getImageUrl(manga.coverUrl)}')`;
-                    heroBg.style.backgroundSize = 'cover';
-                    heroBg.style.backgroundPosition = 'center';
-                }
 
                 const realRating = manga.averageRating || 0;
 
@@ -536,14 +503,13 @@
                     chapterTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-5 text-secondary">Chưa có chương nào được đăng.</td></tr>';
                 } else {
                     chapterTableBody.innerHTML = chapters.map(c => `
-                    <tr class="chapter-row" data-chapter-id="${c.chapterId}" data-paid="${c.paid}" data-price="${c.price || 0}"
-                        onclick="handleChapterClick(${c.chapterId}, ${c.paid}, ${c.price || 0})">
+                    <tr class="chapter-row" data-chapter-id="${c.chapterId}"
+                        onclick="handleChapterClick(${c.chapterId})">
                         <td class="ps-0">
                             <span class="chapter-name">
-                                ${c.paid ? '<i class="fa-solid fa-lock text-warning me-1" title="Chương khoá"></i>' : '<i class="fa-solid fa-lock-open text-muted me-1"></i>'}
+                                <i class="fa-solid fa-book-open text-muted me-1"></i>
                                 Chương ${c.chapterNumber}${c.title ? ': ' + c.title : ''}
                             </span>
-                            ${c.paid && c.price > 0 ? `<span class="badge bg-warning text-dark ms-2">${c.price} Xu</span>` : ''}
                         </td>
                         <td><span class="chapter-group text-secondary">Cứu Truyện</span></td>
                         <td class="text-end"><span class="chapter-date">${new Date(c.createdAt).toLocaleDateString()}</span></td>
@@ -629,6 +595,50 @@
         async function handleChapterClick(chapterId) {
             window.location.href = `doc-truyen.html?chapterId=${chapterId}`;
         }
+
+        // Report Logic
+        let reportModal;
+        function showReportModal(type, id) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+                return;
+            }
+            if (!reportModal) {
+                reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+            }
+            document.getElementById('reportEntityType').value = type;
+            document.getElementById('reportEntityId').value = id;
+            document.getElementById('reportReason').value = '';
+            reportModal.show();
+        }
+
+        document.getElementById('btnSubmitReport')?.addEventListener('click', async () => {
+            const type = document.getElementById('reportEntityType').value;
+            const id = document.getElementById('reportEntityId').value;
+            const reason = document.getElementById('reportReason').value.trim();
+            
+            if (!reason) {
+                alert("Vui lòng nhập lý do báo cáo!");
+                return;
+            }
+            
+            const btn = document.getElementById('btnSubmitReport');
+            const originalText = btn.innerHTML;
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...';
+                await ApiService.createReport(type, parseInt(id), reason);
+                reportModal.hide();
+                alert("Báo cáo của bạn đã được gửi thành công. Cảm ơn bạn đã đóng góp!");
+            } catch (err) {
+                console.error(err);
+                alert("Có lỗi xảy ra khi gửi báo cáo: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
     </script>
 </body>
 

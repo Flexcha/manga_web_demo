@@ -7,6 +7,10 @@ import com.cuutruyen.repository.PageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.cuutruyen.repository.SeriesRepository;
+import com.cuutruyen.repository.ReadingProgressRepository;
+import com.cuutruyen.repository.UserRepository;
+import com.cuutruyen.entity.ReadingProgress;
+import com.cuutruyen.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -21,6 +25,8 @@ public class ChapterService {
     private final PageRepository pageRepository;
     private final SeriesRepository seriesRepository;
     private final FileStorageService fileStorageService;
+    private final ReadingProgressRepository readingProgressRepository;
+    private final UserRepository userRepository;
 
     public Optional<Chapter> getChapter(Integer chapterId) {
         return chapterRepository.findById(chapterId);
@@ -62,5 +68,27 @@ public class ChapterService {
             page.setImageUrl(url);
             pageRepository.save(page);
         }
+    }
+
+    public void trackReadingProgress(Integer chapterId, String username) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) return;
+        
+        Chapter chapter = chapterRepository.findById(chapterId).orElse(null);
+        if (chapter == null || chapter.getSeries() == null) return;
+
+        ReadingProgress progress = new ReadingProgress();
+        progress.setUserId(user.getUserId());
+        progress.setSeriesId(chapter.getSeries().getSeriesId());
+        progress.setChapter(chapter);
+        progress.setUpdatedAt(java.time.LocalDateTime.now());
+        
+        readingProgressRepository.save(progress);
+
+        // Optional: Increment view count
+        com.cuutruyen.entity.Series series = chapter.getSeries();
+        if (series.getTotalViews() == null) series.setTotalViews(0L);
+        series.setTotalViews(series.getTotalViews() + 1);
+        seriesRepository.save(series);
     }
 }

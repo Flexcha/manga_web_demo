@@ -32,4 +32,12 @@ public class CommentService {
         comment.setContent(content);
         return commentRepository.save(comment);
     }
+
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
+    }
+
+    public void deleteComment(Integer commentId) {
+        commentRepository.deleteById(commentId);
+    }
 }

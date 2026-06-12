@@ -71,72 +71,7 @@
 
 <body>
     <!-- Bắt đầu Header -->
-    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center">
-                <!-- Navigation Left -->
-                <div class="col-5 d-flex align-items-center gap-4 header-links">
-                    <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
-                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank"
-                        class="text-decoration-none fw-bold text-uppercase">Discord</a>
-                    <a href="dang-truyen.html" id="navUploadManga"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
-                    <a href="quan-ly-nhom.html" id="navManageGroup"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
-                    <a href="quan-ly-he-thong.html" id="navSystemAdmin"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
-                </div>
-
-                <!-- Logo Center -->
-                <div class="col-2 text-center">
-                    <a href="../index.html"
-                        class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo text-uppercase">
-                        Cứu Truyện
-                    </a>
-                </div>
-
-                <!-- Action Icons Right -->
-                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
-                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
-
-                    <!-- Guest View -->
-                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Đăng nhập</button>
-                        <button class="btn btn-dark fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#registerModal">Đăng ký</button>
-                    </div>
-
-                    <!-- User View -->
-                    <div id="headerUserView" class="d-none align-items-center gap-3">
-                        <button class="btn-circular btn-icon"><i class="fa-regular fa-bell"></i></button>
-                        <div class="dropdown">
-                            <button class="btn-circular btn-user fw-bold border-0" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <span id="headerAvatarText">U</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3"
-                                style="min-width: 220px;">
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
-                                        dõi</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
-                                </li>
-                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
-                                        href="dang-truyen.html">Đăng truyện</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
-                                        xuất</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div id="app-header"></div>
 
     <main class="py-5">
         <div class="container mx-auto" style="max-width: 1000px;">
@@ -195,13 +130,21 @@
                             </div>
 
                             <div class="mb-4 d-none" id="editCoverGroup">
-                                <label class="form-label fw-bold text-secondary">Thay đổi ảnh bìa (Cover Image)</label>
+                                <label class="form-label fw-bold text-secondary">Thay đổi ảnh bìa dọc (Avatar truyện)</label>
                                 <div class="mb-2">
                                     <span class="text-muted small d-block mb-1">Ảnh bìa hiện tại:</span>
                                     <img id="currentCoverPreview" src="" alt="Current Cover" class="img-thumbnail" style="max-height: 150px; display: none;">
                                 </div>
-                                <input type="file" id="mangaCoverFileEdit" class="form-control custom-input"
-                                    accept="image/*">
+                                <input type="file" id="mangaCoverFileEdit" class="form-control custom-input" accept="image/*">
+                            </div>
+
+                            <div class="mb-4 d-none" id="editBannerGroup">
+                                <label class="form-label fw-bold text-secondary">Thay đổi ảnh bìa ngang (Banner/Background)</label>
+                                <div class="mb-2">
+                                    <span class="text-muted small d-block mb-1">Banner hiện tại:</span>
+                                    <img id="currentBannerPreview" src="" alt="Current Banner" class="img-thumbnail" style="max-height: 150px; display: none;">
+                                </div>
+                                <input type="file" id="mangaBannerFileEdit" class="form-control custom-input" accept="image/*">
                             </div>
 
                             <div class="mb-4">
@@ -303,10 +246,13 @@
                             <h5 class="fw-bold mb-4 border-bottom pb-2">Hình ảnh & Chương</h5>
 
                             <div class="mb-4 d-none" id="createCoverGroup">
-                                <label class="form-label fw-bold text-secondary">Ảnh bìa (Cover Image) <span
+                                <label class="form-label fw-bold text-secondary">Ảnh bìa dọc (Avatar) <span
                                         class="text-danger">*</span></label>
                                 <input type="file" id="mangaCoverFile" class="form-control mb-4 custom-input"
                                     accept="image/*">
+
+                                <label class="form-label fw-bold text-secondary mt-3">Ảnh bìa ngang (Banner/Background) (Tùy chọn)</label>
+                                <input type="file" id="mangaBannerFile" class="form-control mb-4 custom-input" accept="image/*">
                             </div>
 
                             <div class="mb-4">
@@ -398,6 +344,7 @@
                 document.getElementById('sideFormColumn').classList.add('d-none');
                 document.getElementById('statusGroup').classList.remove('d-none');
                 document.getElementById('editCoverGroup').classList.remove('d-none');
+                document.getElementById('editBannerGroup').classList.remove('d-none');
                 document.getElementById('editSubmitGroup').classList.remove('d-none');
 
                 // Load existing data
@@ -429,6 +376,14 @@
                         if (previewEl) {
                             previewEl.src = getImageUrl(manga.coverUrl);
                             previewEl.style.display = 'block';
+                        }
+                    }
+
+                    if (manga.bannerUrl) {
+                        const bannerPreviewEl = document.getElementById('currentBannerPreview');
+                        if (bannerPreviewEl) {
+                            bannerPreviewEl.src = getImageUrl(manga.bannerUrl);
+                            bannerPreviewEl.style.display = 'block';
                         }
                     }
                 } catch (err) {
@@ -519,8 +474,12 @@
                         ? document.getElementById('mangaCoverFileEdit').files[0]
                         : document.getElementById('mangaCoverFile').files[0];
 
+                    const bannerFile = isEdit
+                        ? document.getElementById('mangaBannerFileEdit').files[0]
+                        : document.getElementById('mangaBannerFile').files[0];
+
                     if (isEdit) {
-                        await ApiService.updateManga(editId, mangaData, coverFile);
+                        await ApiService.updateManga(editId, mangaData, coverFile, bannerFile);
                         alert("Cập nhật truyện thành công!");
                         window.location.href = 'quan-ly-nhom.html';
                     } else {
@@ -538,7 +497,7 @@
                             return;
                         }
 
-                        const manga = await ApiService.createManga(mangaData, coverFile);
+                        const manga = await ApiService.createManga(mangaData, coverFile, bannerFile);
                         const chapterData = {
                             series: { seriesId: manga.seriesId },
                             chapterNumber: document.getElementById('chapterNumber').value,

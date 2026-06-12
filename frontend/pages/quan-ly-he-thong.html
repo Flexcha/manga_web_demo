@@ -74,62 +74,7 @@
 
 <body>
     <!-- Bắt đầu Header -->
-    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center">
-                <div class="col-5 d-flex align-items-center gap-4 header-links">
-                    <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
-                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank"
-                        class="text-decoration-none fw-bold text-uppercase">Discord</a>
-                    <a href="dang-truyen.html" id="navUploadManga"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
-                    <a href="quan-ly-nhom.html" id="navManageGroup"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
-                    <a href="quan-ly-he-thong.html" id="navSystemAdmin"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
-                </div>
-                <div class="col-2 text-center">
-                    <a href="../index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
-                        CỨU TRUYỆN
-                    </a>
-                </div>
-                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
-                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
-
-                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Đăng nhập</button>
-                        <button class="btn btn-dark fw-bold rounded-pill px-3">Đăng ký</button>
-                    </div>
-
-                    <div id="headerUserView" class="d-flex align-items-center gap-3 d-none">
-                        <button class="btn-circular btn-icon"><i class="fa-solid fa-bell"></i></button>
-                        <div class="dropdown">
-                            <button class="btn-circular btn-user fw-bold border-0" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <span id="headerAvatarText">A</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
-                                        dõi</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
-                                </li>
-                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
-                                        href="dang-truyen.html">Đăng truyện</a></li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
-                                        xuất</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div id="app-header"></div>
 
     <main class="py-5">
         <div class="container mx-auto" style="max-width: 1200px;">
@@ -161,6 +106,10 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="manga-mgmt-tab" data-bs-toggle="tab" data-bs-target="#manga-mgmt"
                             type="button" role="tab">Quản trị Truyện</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="custom-menus-tab" data-bs-toggle="tab" data-bs-target="#custom-menus"
+                            type="button" role="tab">Quản lý Menu</button>
                     </li>
                 </ul>
 
@@ -231,6 +180,30 @@
                             </table>
                         </div>
                     </div>
+
+                    <!-- Tab Quản lý Menu -->
+                    <div class="tab-pane fade p-0" id="custom-menus" role="tabpanel" tabindex="0">
+                        <div class="p-4 border-bottom bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold mb-0"><i class="fa-solid fa-list me-2 text-primary"></i>Menu Động (Tùy chỉnh)</h6>
+                            <button class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#addMenuModal">
+                                <i class="fa-solid fa-plus me-1"></i> THÊM MENU MỚI
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-custom mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 25%">Tên Menu</th>
+                                        <th style="width: 35%">Đường dẫn (URL)</th>
+                                        <th style="width: 25%">Quyền xem</th>
+                                        <th style="width: 15%" class="text-end">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customMenusTbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -247,6 +220,52 @@
         </div>
         <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
                 class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Add Custom Menu Modal -->
+    <div class="modal fade" id="addMenuModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Thêm Menu Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tên hiển thị</label>
+                        <input type="text" id="newMenuTitle" class="form-control" placeholder="Ví dụ: Thống kê">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Đường dẫn (URL)</label>
+                        <input type="text" id="newMenuUrl" class="form-control" placeholder="Ví dụ: thong-ke.html">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted">Phân quyền (Tích chọn những ai được thấy)</label>
+                        <div class="form-check">
+                            <input class="form-check-input role-check" type="checkbox" value="admin" id="roleAdmin" checked disabled>
+                            <label class="form-check-label" for="roleAdmin">Admin (Mặc định)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input role-check" type="checkbox" value="uploader" id="roleUploader">
+                            <label class="form-check-label" for="roleUploader">Uploader</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input role-check" type="checkbox" value="translator" id="roleTranslator">
+                            <label class="form-check-label" for="roleTranslator">Translator</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input role-check" type="checkbox" value="user" id="roleUser">
+                            <label class="form-check-label" for="roleUser">User (Thành viên thường)</label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input role-check" type="checkbox" value="all" id="roleAll">
+                            <label class="form-check-label fw-bold text-success" for="roleAll">Tất cả mọi người (Kể cả chưa đăng nhập)</label>
+                        </div>
+                    </div>
+                    <button id="btnSaveNewMenu" class="btn btn-primary w-100 fw-bold py-2">LƯU MENU</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -433,6 +452,113 @@
                     deleteMangaIdInput.value = '';
                 });
             }
+
+            // ==== QUẢN LÝ MENU ĐỘNG ====
+            const customMenusTbody = document.getElementById('customMenusTbody');
+            const btnSaveNewMenu = document.getElementById('btnSaveNewMenu');
+
+            const loadCustomMenus = () => {
+                if (!customMenusTbody) return;
+                let menus = [];
+                try {
+                    menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
+                } catch (e) {}
+
+                if (menus.length === 0) {
+                    customMenusTbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Chưa có menu nào được thêm</td></tr>';
+                } else {
+                    customMenusTbody.innerHTML = menus.map((m, index) => {
+                        let rolesHtml = m.roles.includes('all') 
+                            ? '<span class="badge bg-success">Tất cả</span>' 
+                            : m.roles.map(r => `<span class="badge bg-secondary me-1">${r}</span>`).join('');
+                        
+                        let titleHtml = m.isHidden ? `<span class="fw-bold text-muted text-decoration-line-through">${m.title}</span> <span class="badge bg-warning text-dark ms-1">Đang ẩn</span>` : `<span class="fw-bold text-dark">${m.title}</span>`;
+                        let toggleBtn = m.isHidden 
+                            ? `<button class="btn btn-sm btn-outline-success fw-bold btn-toggle-custom-menu me-1" data-index="${index}">HIỆN</button>`
+                            : `<button class="btn btn-sm btn-outline-secondary fw-bold btn-toggle-custom-menu me-1" data-index="${index}">ẨN</button>`;
+
+                        return `
+                        <tr>
+                            <td>${titleHtml}</td>
+                            <td><code class="text-primary">${m.url}</code></td>
+                            <td>${rolesHtml}</td>
+                            <td class="text-end">
+                                ${toggleBtn}
+                                <button class="btn btn-sm btn-outline-danger fw-bold btn-delete-custom-menu" data-index="${index}">XÓA</button>
+                            </td>
+                        </tr>
+                        `;
+                    }).join('');
+                }
+            };
+
+            loadCustomMenus();
+
+            if (btnSaveNewMenu) {
+                btnSaveNewMenu.addEventListener('click', () => {
+                    const title = document.getElementById('newMenuTitle').value.trim();
+                    const url = document.getElementById('newMenuUrl').value.trim();
+                    if (!title || !url) return alert('Vui lòng nhập đủ Tên hiển thị và Đường dẫn!');
+
+                    const isAll = document.getElementById('roleAll').checked;
+                    let roles = ['admin'];
+                    
+                    if (isAll) {
+                        roles = ['all'];
+                    } else {
+                        if (document.getElementById('roleUploader').checked) roles.push('uploader');
+                        if (document.getElementById('roleTranslator').checked) roles.push('translator');
+                        if (document.getElementById('roleUser').checked) roles.push('user');
+                    }
+
+                    let menus = [];
+                    try {
+                        menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
+                    } catch (e) {}
+
+                    menus.push({ title, url, roles });
+                    localStorage.setItem('dynamic_custom_menus', JSON.stringify(menus));
+
+                    // Close modal and reload
+                    bootstrap.Modal.getInstance(document.getElementById('addMenuModal')).hide();
+                    alert('Thêm menu thành công!');
+                    window.location.reload();
+                });
+            }
+
+            if (customMenusTbody) {
+                customMenusTbody.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn-delete-custom-menu')) {
+                        if (!confirm('Bạn có chắc muốn xóa menu này không?')) return;
+                        const index = parseInt(e.target.getAttribute('data-index'));
+                        
+                        let menus = [];
+                        try {
+                            menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
+                        } catch (err) {}
+
+                        menus.splice(index, 1);
+                        localStorage.setItem('dynamic_custom_menus', JSON.stringify(menus));
+                        
+                        window.location.reload();
+                    }
+
+                    if (e.target.classList.contains('btn-toggle-custom-menu')) {
+                        const index = parseInt(e.target.getAttribute('data-index'));
+                        let menus = [];
+                        try {
+                            menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
+                        } catch (err) {}
+
+                        if (menus[index]) {
+                            menus[index].isHidden = !menus[index].isHidden;
+                            localStorage.setItem('dynamic_custom_menus', JSON.stringify(menus));
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+
         });
 
     </script>

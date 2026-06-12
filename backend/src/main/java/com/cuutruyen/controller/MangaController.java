@@ -29,6 +29,31 @@ public class MangaController {
         return ResponseEntity.ok(genreRepository.findAll());
     }
 
+    @PostMapping("/genres")
+    public ResponseEntity<Genre> createGenre(@RequestBody java.util.Map<String, String> payload) {
+        String name = payload.get("genreName");
+        if (name == null || name.trim().isEmpty()) throw new RuntimeException("Genre name cannot be empty");
+        Genre genre = new Genre();
+        genre.setGenreName(name.trim());
+        return ResponseEntity.ok(genreRepository.save(genre));
+    }
+
+    @PutMapping("/genres/{id}")
+    public ResponseEntity<Genre> updateGenre(@PathVariable Integer id, @RequestBody java.util.Map<String, String> payload) {
+        Genre genre = genreRepository.findById(id).orElseThrow(() -> new RuntimeException("Genre not found"));
+        String name = payload.get("genreName");
+        if (name != null && !name.trim().isEmpty()) {
+            genre.setGenreName(name.trim());
+        }
+        return ResponseEntity.ok(genreRepository.save(genre));
+    }
+
+    @DeleteMapping("/genres/{id}")
+    public ResponseEntity<Void> deleteGenre(@PathVariable Integer id) {
+        genreRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/latest")
     public ResponseEntity<List<Series>> getLatest(@RequestParam(defaultValue = "10") int limit) {
         return ResponseEntity.ok(mangaService.getLatestManga(limit));
@@ -89,13 +114,14 @@ public class MangaController {
             @RequestParam("seriesType") String seriesType,
             @RequestParam(value = "genres", required = false) List<String> genres,
             @RequestParam(value = "cover", required = false) MultipartFile coverFile,
+            @RequestParam(value = "banner", required = false) MultipartFile bannerFile,
             Authentication auth) {
         User uploader = null;
         if (auth != null) {
             uploader = userRepository.findByUsername(auth.getName()).orElse(null);
         }
         return ResponseEntity
-                .ok(mangaService.createSeriesWithCover(title, alternativeTitle, description, seriesType, coverFile, uploader, genres));
+                .ok(mangaService.createSeriesWithCover(title, alternativeTitle, description, seriesType, coverFile, bannerFile, uploader, genres));
     }
 
     @PostMapping("/{id}/favorite")
@@ -169,12 +195,13 @@ public class MangaController {
             @RequestParam("seriesType") String seriesType,
             @RequestParam("status") String status,
             @RequestParam(value = "cover", required = false) MultipartFile coverFile,
+            @RequestParam(value = "banner", required = false) MultipartFile bannerFile,
             Authentication auth) {
         User user = null;
         if (auth != null) {
             user = userRepository.findByUsername(auth.getName()).orElse(null);
         }
         if (user == null) return ResponseEntity.status(401).build();
-        return ResponseEntity.ok(mangaService.updateSeries(id, title, alternativeTitle, description, seriesType, status, coverFile, user));
+        return ResponseEntity.ok(mangaService.updateSeries(id, title, alternativeTitle, description, seriesType, status, coverFile, bannerFile, user));
     }
 }

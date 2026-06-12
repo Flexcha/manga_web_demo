@@ -38,6 +38,9 @@ public class Series {
     @Column(name = "cover_url")
     private String coverUrl;
 
+    @Column(name = "banner_url")
+    private String bannerUrl;
+
     @Column(name = "total_views")
     private Long totalViews = 0L;
 

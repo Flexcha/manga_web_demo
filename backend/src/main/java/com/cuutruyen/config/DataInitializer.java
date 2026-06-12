@@ -1,13 +1,9 @@
 package com.cuutruyen.config;
 
 import com.cuutruyen.entity.User;
-import com.cuutruyen.entity.Wallet;
-import com.cuutruyen.entity.Transaction;
 import com.cuutruyen.entity.TranslationGroup;
 import com.cuutruyen.entity.Series;
 import com.cuutruyen.repository.UserRepository;
-import com.cuutruyen.repository.WalletRepository;
-import com.cuutruyen.repository.TransactionRepository;
 import com.cuutruyen.repository.TranslationGroupRepository;
 import com.cuutruyen.repository.SeriesRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +20,6 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
-    private final WalletRepository walletRepository;
-    private final TransactionRepository transactionRepository;
     private final TranslationGroupRepository groupRepository;
     private final SeriesRepository seriesRepository;
     private final PasswordEncoder passwordEncoder;
@@ -41,8 +35,7 @@ public class DataInitializer implements CommandLineRunner {
         createUserIfNotExist("uploader", "upload@cuutruyen.com", "upload123", User.Role.uploader);
         createUserIfNotExist("user", "user@cuutruyen.com", "user123", User.Role.user);
 
-        // Ensure every user has a wallet with initial balance
-        ensureAllUsersHaveWallet();
+
 
         // Create demo translation groups
         createDemoGroups();
@@ -66,43 +59,7 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    private void ensureAllUsersHaveWallet() {
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
-            var optWallet = walletRepository.findByUser_UserId(user.getUserId());
-            if (optWallet.isEmpty()) {
-                Wallet wallet = new Wallet();
-                wallet.setUser(user);
-                wallet.setBalance(INITIAL_BALANCE);
-                walletRepository.save(wallet);
 
-                // Create initial deposit transaction
-                Transaction tx = new Transaction();
-                tx.setWallet(wallet);
-                tx.setAmount(INITIAL_BALANCE);
-                tx.setType(Transaction.TransactionType.deposit);
-                tx.setNote("Quà tặng chào mừng thành viên mới");
-                transactionRepository.save(tx);
-
-                log.info("Created wallet with {} coins for user: {}", INITIAL_BALANCE, user.getUsername());
-            } else {
-                // Ensure existing wallet has at least INITIAL_BALANCE if it was 0 (old accounts)
-                Wallet existing = optWallet.get();
-                if (existing.getBalance() == 0L) {
-                    existing.setBalance(INITIAL_BALANCE);
-                    walletRepository.save(existing);
-
-                    Transaction tx = new Transaction();
-                    tx.setWallet(existing);
-                    tx.setAmount(INITIAL_BALANCE);
-                    tx.setType(Transaction.TransactionType.deposit);
-                    tx.setNote("Quà tặng chào mừng - cập nhật hệ thống");
-                    transactionRepository.save(tx);
-                    log.info("Topped up wallet for user: {}", user.getUsername());
-                }
-            }
-        }
-    }
 
     private void createDemoGroups() {
         User uploader = userRepository.findByUsername("uploader").orElse(null);

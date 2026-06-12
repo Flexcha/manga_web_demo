@@ -19,8 +19,6 @@ public class MeController {
     private final UserRepository userRepository;
     private final FavoriteRepository favoriteRepository;
     private final ReadingProgressRepository readingProgressRepository;
-    private final WalletRepository walletRepository;
-    private final TransactionRepository transactionRepository;
 
     @GetMapping("/favorites")
     public ResponseEntity<?> getFavorites(Principal principal) {
@@ -55,26 +53,4 @@ public class MeController {
         User user = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(readingProgressRepository.findByUserIdOrderByUpdatedAtDesc(user.getUserId()));
-    }
-
-    @GetMapping("/wallet")
-    public ResponseEntity<?> getWallet(Principal principal) {
-        User user = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
-        Wallet wallet = walletRepository.findByUser_UserId(user.getUserId())
-                .orElseGet(() -> {
-                    Wallet newWallet = new Wallet();
-                    newWallet.setUser(user);
-                    newWallet.setBalance(0L);
-                    return walletRepository.save(newWallet);
-                });
-        
-        List<Transaction> transactions = transactionRepository.findByWallet_WalletIdOrderByCreatedAtDesc(wallet.getWalletId());
-        
-        return ResponseEntity.ok(Map.of(
-            "wallet", wallet,
-            "transactions", transactions
-        ));
-    }
-}
+    }}

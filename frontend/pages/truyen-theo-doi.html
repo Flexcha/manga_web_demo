@@ -31,72 +31,7 @@
 <body>
 
     <!-- Bắt đầu Header (Bê nguyên từ index.html) -->
-    <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center">
-                <!-- Navigation Left -->
-                <div class="col-5 d-flex align-items-center gap-4 header-links">
-                    <a href="#" class="text-decoration-none fw-bold text-uppercase">Ủng hộ</a>
-                    <a href="https://discord.gg/3vkD7hhdZ" target="_blank"
-                        class="text-decoration-none fw-bold text-uppercase">Discord</a>
-                    <a href="dang-truyen.html" id="navUploadManga"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Đăng truyện</a>
-                    <a href="quan-ly-nhom.html" id="navManageGroup"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Quản lý nhóm</a>
-                    <a href="quan-ly-he-thong.html" id="navSystemAdmin"
-                        class="text-decoration-none fw-bold text-uppercase d-none">Quản trị hệ thống</a>
-                </div>
-
-                <!-- Logo Center -->
-                <div class="col-2 text-center">
-                    <a href="../index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
-                        CỨU TRUYỆN
-                    </a>
-                </div>
-
-                <!-- Action Icons Right -->
-                <div class="col-5 d-flex justify-content-end align-items-center gap-3">
-                    <button id="btnSearchToggle" class="btn-circular btn-icon"><i
-                            class="fa-solid fa-magnifying-glass"></i></button>
-
-                    <!-- Guest View -->
-                    <div id="headerGuestView" class="d-flex align-items-center gap-2">
-                        <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Đăng nhập</button>
-                        <button class="btn btn-dark fw-bold rounded-pill px-3">Đăng ký</button>
-                    </div>
-
-                    <!-- Logged In View -->
-                    <div id="headerUserView" class="d-flex align-items-center gap-3 d-none">
-                        <button class="btn-circular btn-icon"><i class="fa-solid fa-bell"></i></button>
-                        <!-- User Avatar & Dropdown -->
-                        <div class="dropdown">
-                            <!-- Mẫu lấy ký tự đầu tiên của tên (Java Demo): ${#strings.substring(user.name,0,1)} -->
-                            <button class="btn-circular btn-user fw-bold border-0" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <span id="headerAvatarText">F</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-theo-doi.html">Truyện theo
-                                        dõi</a>
-                                </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="truyen-da-doc.html">Truyện đã đọc</a>
-                                </li>
-                                <li><a class="dropdown-item py-2 fw-medium d-none" id="menuUploadManga"
-                                        href="dang-truyen.html">Đăng truyện</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item py-2 fw-medium" href="cai-dat.html">Cài đặt</a></li>
-                                <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng
-                                        xuất</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div id="app-header"></div>
     <!-- Kết thúc Header -->
 
     <!-- Main Content -->

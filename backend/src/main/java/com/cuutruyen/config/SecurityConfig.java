@@ -41,8 +41,6 @@ public class SecurityConfig {
                 // Uploader/Translator/Admin/Editor Endpoints
                 .requestMatchers(HttpMethod.POST, "/api/manga/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR")
                 .requestMatchers(HttpMethod.PUT, "/api/manga/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR")
-                // Chapter unlock - any authenticated user can unlock
-                .requestMatchers(HttpMethod.POST, "/api/chapter/*/unlock").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/chapter/**").hasAnyRole("ADMIN", "UPLOADER", "TRANSLATOR", "EDITOR")
                 
                 // Group Endpoints
@@ -52,13 +50,17 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/groups/{id}/accept", "/api/groups/{id}/reject").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/groups/**").hasRole("ADMIN")
                 
-                // Transaction Endpoints
-                .requestMatchers(HttpMethod.GET, "/api/transactions/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/transactions/withdraw").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/transactions/{id}/approve", "/api/transactions/{id}/reject").hasRole("ADMIN")
-                
                 // User Endpoints
-                .requestMatchers(HttpMethod.GET, "/api/users/me/wallet").authenticated()
+                
+                // Admin Endpoints
+                .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/comment/all").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/comment/*/admin").hasRole("ADMIN")
+                
+                // Report Endpoints
+                .requestMatchers(HttpMethod.POST, "/api/reports").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/reports/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/reports/**").hasRole("ADMIN")
                 
                 // Swagger UI
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()

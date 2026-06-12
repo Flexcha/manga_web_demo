@@ -1,7 +1,7 @@
 package com.cuutruyen.entity;
 
-import jakarta.persistence.*;
 import lombok.Data;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -22,11 +22,6 @@ public class Chapter {
     private BigDecimal chapterNumber;
 
     private String title;
-
-    @Column(name = "is_paid")
-    private boolean isPaid = false;
-
-    private Integer price = 0;
 
     @Column(name = "view_count")
     private Long viewCount = 0L;

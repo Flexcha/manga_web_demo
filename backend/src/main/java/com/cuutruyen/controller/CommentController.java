@@ -29,4 +29,15 @@ public class CommentController {
         
         return ResponseEntity.ok(commentService.addComment(userId, seriesId, chapterId, content));
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Comment>> getAllComments() {
+        return ResponseEntity.ok(commentService.getAllComments());
+    }
+
+    @DeleteMapping("/{id}/admin")
+    public ResponseEntity<Void> deleteCommentAdmin(@PathVariable Integer id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
+    }
 }

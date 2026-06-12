@@ -142,7 +142,7 @@ const ApiService = {
         });
     },
 
-    async createManga(mangaData, coverFile) {
+    async createManga(mangaData, coverFile, bannerFile) {
         const formData = new FormData();
         formData.append("title", mangaData.title);
         formData.append("alternativeTitle", mangaData.alternativeTitle);
@@ -153,6 +153,9 @@ const ApiService = {
         }
         if (coverFile) {
             formData.append("cover", coverFile);
+        }
+        if (bannerFile) {
+            formData.append("banner", bannerFile);
         }
 
         const token = localStorage.getItem('token');
@@ -168,7 +171,7 @@ const ApiService = {
         return await response.json();
     },
 
-    async updateManga(seriesId, mangaData, coverFile) {
+    async updateManga(seriesId, mangaData, coverFile, bannerFile) {
         const formData = new FormData();
         formData.append("title", mangaData.title);
         formData.append("alternativeTitle", mangaData.alternativeTitle);
@@ -180,6 +183,9 @@ const ApiService = {
         }
         if (coverFile) {
             formData.append("cover", coverFile);
+        }
+        if (bannerFile) {
+            formData.append("banner", bannerFile);
         }
 
         const token = localStorage.getItem('token');
@@ -343,13 +349,7 @@ const ApiService = {
         return this.fetchWithTimeout("/me/history");
     },
 
-    async getMeWallet() {
-        return this.fetchWithTimeout("/users/me/wallet");
-    },
 
-    async getMyWallet() {
-        return this.fetchWithTimeout("/users/me/wallet");
-    },
 
     // GROUP APIs
     async getGroupInfo(groupId) {
@@ -370,31 +370,6 @@ const ApiService = {
         return this.fetchWithTimeout("/groups/my-group");
     },
 
-    // TRANSACTION APIs
-    async getAllTransactions() {
-        return this.fetchWithTimeout("/transactions");
-    },
-
-    async getPendingWithdrawals() {
-        return this.fetchWithTimeout("/transactions/pending-withdrawals");
-    },
-
-    async requestWithdrawal(amount, note) {
-        return this.fetchWithTimeout("/transactions/withdraw", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount, note })
-        });
-    },
-
-    async approveWithdrawal(txId) {
-        return this.fetchWithTimeout(`/transactions/${txId}/approve`, { method: "PUT" });
-    },
-
-    async rejectWithdrawal(txId) {
-        return this.fetchWithTimeout(`/transactions/${txId}/reject`, { method: "PUT" });
-    },
-
     // MANGA APPROVAL APIs
     async getPendingManga() {
         return this.fetchWithTimeout("/manga/pending");
@@ -412,13 +387,58 @@ const ApiService = {
         return this.fetchWithTimeout(`/manga/${seriesId}/reject-manga`, { method: "PUT" });
     },
 
-    // CHAPTER UNLOCK APIs
-    async checkChapterUnlock(chapterId) {
-        return this.fetchWithTimeout(`/chapter/${chapterId}/check-unlock`);
+    // ADMIN APIs
+    async getStats() {
+        return this.fetchWithTimeout("/admin/stats");
     },
 
-    async unlockChapter(chapterId) {
-        return this.fetchWithTimeout(`/chapter/${chapterId}/unlock`, { method: "POST" });
+    async getAllComments() {
+        return this.fetchWithTimeout("/comment/all");
+    },
+
+    async deleteCommentAdmin(commentId) {
+        return this.fetchWithTimeout(`/comment/${commentId}/admin`, { method: "DELETE" });
+    },
+
+    async createGenre(genreName) {
+        return this.fetchWithTimeout("/manga/genres", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ genreName })
+        });
+    },
+
+    async updateGenre(genreId, genreName) {
+        return this.fetchWithTimeout(`/manga/genres/${genreId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ genreName })
+        });
+    },
+
+    async deleteGenre(genreId) {
+        return this.fetchWithTimeout(`/manga/genres/${genreId}`, { method: "DELETE" });
+    },
+
+    async createReport(entityType, entityId, reason) {
+        return this.fetchWithTimeout("/reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ entityType, entityId, reason })
+        });
+    },
+
+    async getReports(status = "") {
+        const query = status ? `?status=${status}` : "";
+        return this.fetchWithTimeout(`/reports${query}`);
+    },
+
+    async resolveReport(reportId, status) {
+        return this.fetchWithTimeout(`/reports/${reportId}/resolve`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status })
+        });
     }
 };
 

@@ -199,102 +199,163 @@ const setupAuthHandlers = () => {
     }
 };
 
-const updateHeaderUI = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    const headerGuestView = document.getElementById('headerGuestView');
-    const headerUserView = document.getElementById('headerUserView');
-    const uploadLinks = document.querySelectorAll('#navUploadManga, #headerUploadLink, #menuUploadManga');
-    const manageGroupLinks = document.querySelectorAll('#navManageGroup');
-    const systemAdminLinks = document.querySelectorAll('#navSystemAdmin');
+const injectHeaderComponent = () => {
+    const headerContainer = document.getElementById('app-header');
+    if (!headerContainer) return;
 
-    // 1. Role-based visibility for specific links
+    // Determine base path
+    const isPagesDir = window.location.pathname.includes('/pages/');
+    const basePath = isPagesDir ? '../' : './';
+    const pagesPath = isPagesDir ? '' : 'pages/';
+    const currentPath = window.location.pathname;
+
+    let userData = null;
+    try {
+        userData = JSON.parse(localStorage.getItem('user'));
+    } catch (e) {}
+
+    // Tự động thăng cấp role nếu được Admin duyệt (Lưu ở localStorage)
     if (userData) {
-        // Tự động thăng cấp role nếu được Admin duyệt (Lưu ở localStorage)
         const approvedUploaders = JSON.parse(localStorage.getItem('approved_uploaders') || '[]');
         if (approvedUploaders.includes(userData.username) && userData.role.toLowerCase() === 'user') {
             userData.role = 'uploader';
             localStorage.setItem('user', JSON.stringify(userData));
         }
-
-        const role = userData.role.toLowerCase();
-
-        // Upload permission (Admin, Uploader, Translator) can go to upload page.
-        // Normal users see the button but it opens the create group modal.
-        const canUpload = (role === 'admin' || role === 'uploader' || role === 'translator');
-        uploadLinks.forEach(link => {
-            link.classList.remove('d-none');
-            // If user cannot upload, intercept the click
-            if (!canUpload) {
-                // Remove existing href if any to prevent navigation
-                link.href = "#";
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    new bootstrap.Modal(document.getElementById('createGroupRequestModal')).show();
-                });
-            }
-        });
-
-        // Group Management (Admin, Uploader)
-        const canManageGroup = (role === 'admin' || role === 'uploader');
-        manageGroupLinks.forEach(link => canManageGroup ? link.classList.remove('d-none') : link.classList.add('d-none'));
-
-        // System Admin (Admin only)
-        const isSystemAdmin = (role === 'admin');
-        systemAdminLinks.forEach(link => isSystemAdmin ? link.classList.remove('d-none') : link.classList.add('d-none'));
-
-        // Hide support link for Admin
-        const supportLinks = document.querySelectorAll('.header-links a');
-        supportLinks.forEach(link => {
-            if (link.textContent.trim().toUpperCase() === 'ỦNG HỘ') {
-                isSystemAdmin ? link.classList.add('d-none') : link.classList.remove('d-none');
-            }
-        });
-
-    } else {
-        // Guest mode - hide all protected links
-        [...uploadLinks, ...manageGroupLinks, ...systemAdminLinks].forEach(link => link.classList.add('d-none'));
     }
 
-    // 2. Toggle Guest vs User header
-    if (userData && headerUserView) {
-        if (headerGuestView) headerGuestView.classList.add('d-none');
-        headerUserView.classList.remove('d-none');
-        headerUserView.classList.add('d-flex');
+    const role = userData ? userData.role.toLowerCase() : 'guest';
+    const isSystemAdmin = role === 'admin';
+    const canUpload = role === 'admin' || role === 'uploader' || role === 'translator';
+    const canManageGroup = role === 'admin' || role === 'uploader';
 
-        const avatarEl = document.getElementById('headerAvatarText');
-        if (avatarEl) avatarEl.textContent = userData.username.charAt(0).toUpperCase();
+    // Xây dựng menu bên trái
+    let leftMenuHTML = `<a href="#" class="text-decoration-none fw-bold text-uppercase ${isSystemAdmin ? 'd-none' : ''}">Ủng hộ</a>
+                        <a href="https://discord.gg/3vkD7hhdZ" target="_blank" class="text-decoration-none fw-bold text-uppercase">Discord</a>`;
+    
+    if (canUpload) {
+        const uploadClass = currentPath.includes('dang-truyen.html') ? 'text-warning' : '';
+        leftMenuHTML += `\n                        <a href="${pagesPath}dang-truyen.html" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase ${uploadClass}">Đăng truyện</a>`;
+    } else if (role !== 'guest') {
+        leftMenuHTML += `\n                        <a href="#" id="navUploadManga" class="text-decoration-none fw-bold text-uppercase">Đăng truyện</a>`;
+    }
 
-        // Fix Logout Buttons (both global and dropdown)
-        document.querySelectorAll('#btnLogout').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+    if (canManageGroup) {
+        const groupClass = currentPath.includes('quan-ly-nhom.html') ? 'text-warning' : '';
+        leftMenuHTML += `\n                        <a href="${pagesPath}quan-ly-nhom.html" id="navManageGroup" class="text-decoration-none fw-bold text-uppercase ${groupClass}">Quản lý nhóm</a>`;
+    }
+
+    if (isSystemAdmin) {
+        const adminClass = currentPath.includes('quan-ly-he-thong.html') ? 'text-warning' : '';
+        leftMenuHTML += `\n                        <a href="${pagesPath}quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase ${adminClass}">Quản trị hệ thống</a>`;
+    }
+
+    // Inject custom dynamic menus from Admin
+    let customMenus = [];
+    try {
+        customMenus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
+    } catch (e) {}
+
+    customMenus.forEach(menu => {
+        if (!menu.isHidden && (menu.roles.includes('all') || menu.roles.includes(role))) {
+            let href = menu.url;
+            if (!href.startsWith('http')) {
+                href = pagesPath + href;
+            }
+            const activeClass = currentPath.includes(menu.url.split('/').pop()) ? 'text-warning' : '';
+            leftMenuHTML += `\n                        <a href="${href}" class="text-decoration-none fw-bold text-uppercase ${activeClass}">${menu.title}</a>`;
+        }
+    });
+
+    // Xây dựng block User/Guest
+    let rightAuthHTML = '';
+    if (role === 'guest') {
+        rightAuthHTML = `
+                        <div id="headerGuestView" class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-secondary fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập</button>
+                            <button class="btn btn-dark fw-bold rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký</button>
+                        </div>
+        `;
+    } else {
+        const avatarChar = userData.username ? userData.username.charAt(0).toUpperCase() : 'U';
+        rightAuthHTML = `
+                        <div id="headerUserView" class="d-flex align-items-center gap-3">
+                            <button class="btn-circular btn-icon"><i class="fa-solid fa-bell"></i></button>
+                            <div class="dropdown">
+                                <button class="btn-circular btn-user fw-bold border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span id="headerAvatarText">${avatarChar}</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 rounded-3">
+                                    <li><a class="dropdown-item py-2 fw-medium ${currentPath.includes('truyen-theo-doi.html')?'active':''}" href="${pagesPath}truyen-theo-doi.html">Truyện theo dõi</a></li>
+                                    <li><a class="dropdown-item py-2 fw-medium ${currentPath.includes('truyen-da-doc.html')?'active':''}" href="${pagesPath}truyen-da-doc.html">Truyện đã đọc</a></li>
+                                    ${canUpload ? `<li><a class="dropdown-item py-2 fw-medium ${currentPath.includes('dang-truyen.html')?'active':''}" id="menuUploadManga" href="${pagesPath}dang-truyen.html">Đăng truyện</a></li>` : ''}
+                                    <li><a class="dropdown-item py-2 fw-medium ${currentPath.includes('cai-dat.html')?'active':''}" href="${pagesPath}cai-dat.html">Cài đặt</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item py-2 text-danger fw-medium" id="btnLogout" href="#">Đăng xuất</a></li>
+                                </ul>
+                            </div>
+                        </div>
+        `;
+    }
+
+    const headerHTML = `
+        <header class="cuutruyen-header sticky-top pt-3 pb-3 shadow-sm">
+            <div class="container-fluid px-5">
+                <div class="row align-items-center">
+                    <div class="col-5 d-flex align-items-center gap-4 header-links">
+                        ${leftMenuHTML}
+                    </div>
+                    <div class="col-2 text-center">
+                        <a href="${basePath}index.html" class="text-decoration-none text-dark fs-4 fw-bold cuutruyen-logo">
+                            CỨU TRUYỆN
+                        </a>
+                    </div>
+                    <div class="col-5 d-flex justify-content-end align-items-center gap-3">
+                        <button id="btnSearchToggle" class="btn-circular btn-icon"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        ${rightAuthHTML}
+                    </div>
+                </div>
+            </div>
+        </header>
+    `;
+
+    headerContainer.innerHTML = headerHTML;
+
+    // Attach local events specific to header
+    const uploadLinks = document.querySelectorAll('#navUploadManga');
+    if (role !== 'guest' && !canUpload) {
+        uploadLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
                 e.preventDefault();
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
+                new bootstrap.Modal(document.getElementById('createGroupRequestModal')).show();
             });
         });
+    }
 
-        // Setup notification bell
-        const bellIcon = document.querySelector('.fa-bell');
-        if (bellIcon) {
-            const bellBtn = bellIcon.closest('button') || bellIcon.closest('a');
-            if (bellBtn) {
-                bellBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.location.href = window.location.pathname.includes('/pages/') ? 'thong-bao.html' : 'pages/thong-bao.html';
-                });
-            }
+    document.querySelectorAll('#btnLogout').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = basePath + 'index.html';
+        });
+    });
+
+    const bellIcon = document.querySelector('.fa-bell');
+    if (bellIcon) {
+        const bellBtn = bellIcon.closest('button') || bellIcon.closest('a');
+        if (bellBtn) {
+            bellBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = `${pagesPath}thong-bao.html`;
+            });
         }
-    } else if (headerGuestView && headerUserView) {
-        headerGuestView.classList.remove('d-none');
-        headerUserView.classList.add('d-none');
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    injectHeaderComponent();
     injectAuthComponents();
     setupAuthHandlers();
-    updateHeaderUI();
 
     // Initial check for non-dynamic pages
     if (!document.querySelector('.heroSwiper .swiper-wrapper')) {

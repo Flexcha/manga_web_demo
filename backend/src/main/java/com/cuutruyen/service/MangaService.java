@@ -11,7 +11,6 @@ import com.cuutruyen.repository.CommentRepository;
 import com.cuutruyen.repository.FavoriteRepository;
 import com.cuutruyen.repository.RatingRepository;
 import com.cuutruyen.repository.ReadingProgressRepository;
-import com.cuutruyen.repository.PurchasedChapterRepository;
 import com.cuutruyen.entity.Chapter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +43,6 @@ public class MangaService {
     private final FavoriteRepository favoriteRepository;
     private final RatingRepository ratingRepository;
     private final ReadingProgressRepository readingProgressRepository;
-    private final PurchasedChapterRepository purchasedChapterRepository;
     private final com.cuutruyen.repository.GenreRepository genreRepository;
     private static final String UPLOAD_DIR = "uploads";
 
@@ -86,7 +84,7 @@ public class MangaService {
     }
 
     public Series createSeriesWithCover(String title, String alternativeTitle, String description, String seriesType,
-            MultipartFile coverFile, User uploader, List<String> genreNames) {
+            MultipartFile coverFile, MultipartFile bannerFile, User uploader, List<String> genreNames) {
         Series series = new Series();
         series.setTitle(title);
         series.setAlternativeTitle(alternativeTitle);
@@ -141,6 +139,16 @@ public class MangaService {
                 series.setCoverUrl(coverUrl);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to upload cover image: " + e.getMessage(), e);
+            }
+        }
+
+        // Handle banner image upload
+        if (bannerFile != null && !bannerFile.isEmpty()) {
+            try {
+                String bannerUrl = uploadCoverImage(bannerFile);
+                series.setBannerUrl(bannerUrl);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload banner image: " + e.getMessage(), e);
             }
         }
 
@@ -215,7 +223,7 @@ public class MangaService {
     }
 
     public Series updateSeries(Integer id, String title, String alternativeTitle, String description, String seriesType,
-            String status, MultipartFile coverFile, User currentUser) {
+            String status, MultipartFile coverFile, MultipartFile bannerFile, User currentUser) {
         Series series = getMangaById(id);
 
         // Kiểm tra quyền: Admin hoặc Uploader gốc hoặc (Cùng nhóm dịch AND
@@ -264,6 +272,15 @@ public class MangaService {
             }
         }
 
+        if (bannerFile != null && !bannerFile.isEmpty()) {
+            try {
+                String bannerUrl = uploadCoverImage(bannerFile);
+                series.setBannerUrl(bannerUrl);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to update banner image: " + e.getMessage(), e);
+            }
+        }
+
         return seriesRepository.save(series);
     }
 
@@ -284,8 +301,6 @@ public class MangaService {
         // 1. Delete all pages of all chapters of this series
         List<Chapter> chapters = chapterRepository.findAllBySeriesSeriesId(id);
         for (var chapter : chapters) {
-            // Delete purchased records for this chapter
-            purchasedChapterRepository.deleteAll(purchasedChapterRepository.findByChapterId(chapter.getChapterId()));
             // Delete pages
             var pages = pageRepository.findByChapterChapterIdOrderByPageNumberAsc(chapter.getChapterId());
             pageRepository.deleteAll(pages);
