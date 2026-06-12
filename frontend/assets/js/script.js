@@ -73,9 +73,13 @@ const injectAuthComponents = () => {
                                 <label class="form-label small fw-bold text-muted">Tên hiển thị</label>
                                 <input type="text" id="regDisplayName" class="form-control auth-input">
                             </div>
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label class="form-label small fw-bold text-muted">Mật khẩu</label>
                                 <input type="password" id="regPassword" class="form-control auth-input">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">Nhập lại mật khẩu</label>
+                                <input type="password" id="regConfirmPassword" class="form-control auth-input">
                             </div>
                             <button id="btnSubmitRegister" class="btn-auth-submit">ĐĂNG KÝ</button>
                         </div>
@@ -102,11 +106,40 @@ const injectAuthComponents = () => {
                     </div>
                 </div>
             </div>
+
+            <!-- Global Search Overlay -->
+            <div id="searchOverlay" class="search-overlay d-none">
+                <div class="search-overlay-content container mx-auto" style="max-width: 800px; padding-top: 100px;">
+                    <div class="position-relative">
+                        <input type="text" id="liveSearchInput"
+                            class="form-control form-control-lg py-3 px-4 rounded-3 shadow-sm"
+                            style="font-size: 1.15rem; border: 2px solid #a2bdf8;" placeholder="Tìm kiếm...">
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="${window.location.pathname.includes('/pages/') ? '' : 'pages/'}search.html" class="text-secondary fw-bold text-decoration-none"
+                                style="font-size: 0.85rem;">Tìm kiếm nâng cao</a>
+                        </div>
+                    </div>
+                    <div id="searchResults"
+                        class="search-results-dropdown bg-white rounded-3 shadow-lg mt-3 overflow-hidden d-none">
+                        <div class="list-group list-group-flush" id="searchResultList"></div>
+                        <div class="bg-light p-3 border-top pb-2">
+                            <a href="${window.location.pathname.includes('/pages/') ? '' : 'pages/'}search.html" class="text-secondary text-decoration-none fw-bold"
+                                style="font-size: 0.85rem;" id="searchAllText">Tìm tất cả kết quả cho từ khóa</a>
+                        </div>
+                    </div>
+                </div>
+                <button id="closeSearchBtn" class="btn text-secondary position-absolute top-0 end-0 m-4 fs-2 border-0"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
         `;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
-    // User header injection removed as it's now in HTML for better design control
+    // Remove any hardcoded searchOverlay from pages to prevent duplicates
+    const existingSearchOverlays = document.querySelectorAll('#searchOverlay');
+    if (existingSearchOverlays.length > 1) {
+        existingSearchOverlays[0].remove();
+    }
 };
 
 const setupAuthHandlers = () => {
@@ -141,6 +174,19 @@ const setupAuthHandlers = () => {
             const email = document.getElementById('regEmail').value;
             const displayName = document.getElementById('regDisplayName').value;
             const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            // Validate định dạng email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert("Định dạng email không hợp lệ. Vui lòng nhập đúng định dạng (VD: ten@gmail.com).");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert("Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại!");
+                return;
+            }
 
             try {
                 btnSubmitRegister.disabled = true;
@@ -352,22 +398,14 @@ const injectHeaderComponent = () => {
             });
         }
     }
+    
+    if (window.setupSearchHandlers) window.setupSearchHandlers();
     }; // end of renderHeader
     
     renderHeader();
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    injectHeaderComponent();
-    injectAuthComponents();
-    setupAuthHandlers();
-
-    // Initial check for non-dynamic pages
-    if (!document.querySelector('.heroSwiper .swiper-wrapper')) {
-        window.initSwipers();
-    }
-
-    // LIVE SEARCH
+window.setupSearchHandlers = () => {
     const btnSearchToggle = document.getElementById('btnSearchToggle');
     const searchOverlay = document.getElementById('searchOverlay');
     const closeSearchBtn = document.getElementById('closeSearchBtn');
@@ -381,9 +419,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => liveSearchInput && liveSearchInput.focus(), 100);
         });
 
-        closeSearchBtn.addEventListener('click', () => {
-            searchOverlay.classList.add('d-none');
-        });
+        if (closeSearchBtn) {
+            closeSearchBtn.addEventListener('click', () => {
+                searchOverlay.classList.add('d-none');
+            });
+        }
 
         let typingTimer;
         if (liveSearchInput) {
@@ -442,5 +482,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    injectHeaderComponent();
+    injectAuthComponents();
+    setupAuthHandlers();
+
+    // Initial check for non-dynamic pages
+    if (!document.querySelector('.heroSwiper .swiper-wrapper')) {
+        window.initSwipers();
     }
 });

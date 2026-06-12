@@ -114,6 +114,10 @@
                 <label class="form-label small fw-bold">Mật khẩu</label>
                 <input type="password" class="form-control" name="password" placeholder="Tối thiểu 6 ký tự" required>
             </div>
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Nhập lại mật khẩu</label>
+                <input type="password" class="form-control" name="confirmPassword" placeholder="Xác nhận lại mật khẩu" required>
+            </div>
             <button type="submit" class="btn btn-primary btn-auth">ĐĂNG KÝ</button>
             <div class="auth-switch">
                 Đã có tài khoản? <a href="#" onclick="toggleAuth('login')">Đăng nhập</a>
@@ -158,6 +162,18 @@
             e.preventDefault();
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
+            
+            // Validate định dạng email bằng Regex (Bắt buộc phải có @ và dấu chấm)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                alert('Định dạng email không hợp lệ. Vui lòng nhập đúng định dạng (VD: ten@gmail.com).');
+                return;
+            }
+
+            if (data.password !== data.confirmPassword) {
+                alert('Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại!');
+                return;
+            }
             
             try {
                 await window.ApiService.register(data);
