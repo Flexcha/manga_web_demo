@@ -439,6 +439,31 @@ const ApiService = {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status })
         });
+    },
+
+    // MENU APIs
+    async getAllMenus() {
+        return this.fetchWithTimeout("/menus");
+    },
+
+    async createMenu(menuData) {
+        return this.fetchWithTimeout("/menus", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(menuData)
+        });
+    },
+
+    async updateMenu(id, menuData) {
+        return this.fetchWithTimeout(`/menus/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(menuData)
+        });
+    },
+
+    async deleteMenu(id) {
+        return this.fetchWithTimeout(`/menus/${id}`, { method: "DELETE" });
     }
 };
 

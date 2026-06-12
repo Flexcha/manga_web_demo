@@ -457,45 +457,46 @@
             const customMenusTbody = document.getElementById('customMenusTbody');
             const btnSaveNewMenu = document.getElementById('btnSaveNewMenu');
 
-            const loadCustomMenus = () => {
+            const loadCustomMenus = async () => {
                 if (!customMenusTbody) return;
-                let menus = [];
                 try {
-                    menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
-                } catch (e) {}
+                    const menus = await ApiService.getAllMenus() || [];
+                    if (menus.length === 0) {
+                        customMenusTbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Chưa có menu nào được thêm</td></tr>';
+                    } else {
+                        customMenusTbody.innerHTML = menus.map(m => {
+                            let roleArray = m.roles ? m.roles.split(',') : [];
+                            let rolesHtml = roleArray.includes('all') 
+                                ? '<span class="badge bg-success">Tất cả</span>' 
+                                : roleArray.map(r => `<span class="badge bg-secondary me-1">${r}</span>`).join('');
+                            
+                            let titleHtml = m.isHidden ? `<span class="fw-bold text-muted text-decoration-line-through">${m.title}</span> <span class="badge bg-warning text-dark ms-1">Đang ẩn</span>` : `<span class="fw-bold text-dark">${m.title}</span>`;
+                            let toggleBtn = m.isHidden 
+                                ? `<button class="btn btn-sm btn-outline-success fw-bold btn-toggle-custom-menu me-1" data-id="${m.id}" data-hidden="true">HIỆN</button>`
+                                : `<button class="btn btn-sm btn-outline-secondary fw-bold btn-toggle-custom-menu me-1" data-id="${m.id}" data-hidden="false">ẨN</button>`;
 
-                if (menus.length === 0) {
-                    customMenusTbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Chưa có menu nào được thêm</td></tr>';
-                } else {
-                    customMenusTbody.innerHTML = menus.map((m, index) => {
-                        let rolesHtml = m.roles.includes('all') 
-                            ? '<span class="badge bg-success">Tất cả</span>' 
-                            : m.roles.map(r => `<span class="badge bg-secondary me-1">${r}</span>`).join('');
-                        
-                        let titleHtml = m.isHidden ? `<span class="fw-bold text-muted text-decoration-line-through">${m.title}</span> <span class="badge bg-warning text-dark ms-1">Đang ẩn</span>` : `<span class="fw-bold text-dark">${m.title}</span>`;
-                        let toggleBtn = m.isHidden 
-                            ? `<button class="btn btn-sm btn-outline-success fw-bold btn-toggle-custom-menu me-1" data-index="${index}">HIỆN</button>`
-                            : `<button class="btn btn-sm btn-outline-secondary fw-bold btn-toggle-custom-menu me-1" data-index="${index}">ẨN</button>`;
-
-                        return `
-                        <tr>
-                            <td>${titleHtml}</td>
-                            <td><code class="text-primary">${m.url}</code></td>
-                            <td>${rolesHtml}</td>
-                            <td class="text-end">
-                                ${toggleBtn}
-                                <button class="btn btn-sm btn-outline-danger fw-bold btn-delete-custom-menu" data-index="${index}">XÓA</button>
-                            </td>
-                        </tr>
-                        `;
-                    }).join('');
+                            return `
+                            <tr>
+                                <td>${titleHtml}</td>
+                                <td><code class="text-primary">${m.url}</code></td>
+                                <td>${rolesHtml}</td>
+                                <td class="text-end">
+                                    ${toggleBtn}
+                                    <button class="btn btn-sm btn-outline-danger fw-bold btn-delete-custom-menu" data-id="${m.id}">XÓA</button>
+                                </td>
+                            </tr>
+                            `;
+                        }).join('');
+                    }
+                } catch (e) {
+                    customMenusTbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi khi tải Menu</td></tr>';
                 }
             };
 
-            loadCustomMenus();
+            await loadCustomMenus();
 
             if (btnSaveNewMenu) {
-                btnSaveNewMenu.addEventListener('click', () => {
+                btnSaveNewMenu.addEventListener('click', async () => {
                     const title = document.getElementById('newMenuTitle').value.trim();
                     const url = document.getElementById('newMenuUrl').value.trim();
                     if (!title || !url) return alert('Vui lòng nhập đủ Tên hiển thị và Đường dẫn!');
@@ -511,49 +512,49 @@
                         if (document.getElementById('roleUser').checked) roles.push('user');
                     }
 
-                    let menus = [];
                     try {
-                        menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
-                    } catch (e) {}
-
-                    menus.push({ title, url, roles });
-                    localStorage.setItem('dynamic_custom_menus', JSON.stringify(menus));
-
-                    // Close modal and reload
-                    bootstrap.Modal.getInstance(document.getElementById('addMenuModal')).hide();
-                    alert('Thêm menu thành công!');
-                    window.location.reload();
+                        btnSaveNewMenu.disabled = true;
+                        await ApiService.createMenu({ title, url, roles: roles.join(','), isHidden: false });
+                        
+                        bootstrap.Modal.getInstance(document.getElementById('addMenuModal')).hide();
+                        alert('Thêm menu thành công!');
+                        await loadCustomMenus();
+                        // Reset form
+                        document.getElementById('newMenuTitle').value = '';
+                        document.getElementById('newMenuUrl').value = '';
+                    } catch (e) {
+                        alert("Lỗi khi thêm Menu: " + e.message);
+                    } finally {
+                        btnSaveNewMenu.disabled = false;
+                    }
                 });
             }
 
             if (customMenusTbody) {
-                customMenusTbody.addEventListener('click', (e) => {
+                customMenusTbody.addEventListener('click', async (e) => {
                     if (e.target.classList.contains('btn-delete-custom-menu')) {
                         if (!confirm('Bạn có chắc muốn xóa menu này không?')) return;
-                        const index = parseInt(e.target.getAttribute('data-index'));
-                        
-                        let menus = [];
+                        const id = e.target.getAttribute('data-id');
                         try {
-                            menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
-                        } catch (err) {}
-
-                        menus.splice(index, 1);
-                        localStorage.setItem('dynamic_custom_menus', JSON.stringify(menus));
-                        
-                        window.location.reload();
+                            e.target.disabled = true;
+                            await ApiService.deleteMenu(id);
+                            await loadCustomMenus();
+                        } catch (err) {
+                            alert("Lỗi xóa menu: " + err.message);
+                            e.target.disabled = false;
+                        }
                     }
 
                     if (e.target.classList.contains('btn-toggle-custom-menu')) {
-                        const index = parseInt(e.target.getAttribute('data-index'));
-                        let menus = [];
+                        const id = e.target.getAttribute('data-id');
+                        const isHiddenNow = e.target.getAttribute('data-hidden') === 'true';
                         try {
-                            menus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
-                        } catch (err) {}
-
-                        if (menus[index]) {
-                            menus[index].isHidden = !menus[index].isHidden;
-                            localStorage.setItem('dynamic_custom_menus', JSON.stringify(menus));
-                            window.location.reload();
+                            e.target.disabled = true;
+                            await ApiService.updateMenu(id, { isHidden: !isHiddenNow });
+                            await loadCustomMenus();
+                        } catch (err) {
+                            alert("Lỗi ẩn/hiện menu: " + err.message);
+                            e.target.disabled = false;
                         }
                     }
                 });

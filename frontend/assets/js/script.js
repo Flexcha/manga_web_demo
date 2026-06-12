@@ -249,22 +249,26 @@ const injectHeaderComponent = () => {
         leftMenuHTML += `\n                        <a href="${pagesPath}quan-ly-he-thong.html" id="navSystemAdmin" class="text-decoration-none fw-bold text-uppercase ${adminClass}">Quản trị hệ thống</a>`;
     }
 
-    // Inject custom dynamic menus from Admin
-    let customMenus = [];
-    try {
-        customMenus = JSON.parse(localStorage.getItem('dynamic_custom_menus')) || [];
-    } catch (e) {}
-
-    customMenus.forEach(menu => {
-        if (!menu.isHidden && (menu.roles.includes('all') || menu.roles.includes(role))) {
-            let href = menu.url;
-            if (!href.startsWith('http')) {
-                href = pagesPath + href;
-            }
-            const activeClass = currentPath.includes(menu.url.split('/').pop()) ? 'text-warning' : '';
-            leftMenuHTML += `\n                        <a href="${href}" class="text-decoration-none fw-bold text-uppercase ${activeClass}">${menu.title}</a>`;
+    const renderHeader = async () => {
+        // Inject custom dynamic menus from Admin
+        let customMenus = [];
+        try {
+            customMenus = await ApiService.getAllMenus() || [];
+        } catch (e) {
+            console.error("Failed to fetch menus from API");
         }
-    });
+
+        customMenus.forEach(menu => {
+            const roleArray = menu.roles ? menu.roles.split(',') : [];
+            if (!menu.isHidden && (roleArray.includes('all') || roleArray.includes(role))) {
+                let href = menu.url;
+                if (!href.startsWith('http')) {
+                    href = pagesPath + href;
+                }
+                const activeClass = currentPath.includes(menu.url.split('/').pop()) ? 'text-warning' : '';
+                leftMenuHTML += `\n                        <a href="${href}" class="text-decoration-none fw-bold text-uppercase ${activeClass}">${menu.title}</a>`;
+            }
+        });
 
     // Xây dựng block User/Guest
     let rightAuthHTML = '';
@@ -350,6 +354,9 @@ const injectHeaderComponent = () => {
             });
         }
     }
+    }; // end of renderHeader
+    
+    renderHeader();
 };
 
 document.addEventListener('DOMContentLoaded', () => {
