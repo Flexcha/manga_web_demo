@@ -1,1 +1,1 @@
-# manga_web_demo_vibe_code
+# manga_web_demo
