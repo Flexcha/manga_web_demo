@@ -11,8 +11,8 @@ target/
 *.sql
 
 # Runtime uploaded files
-uploads/
-backend/uploads/
+# uploads/
+#backend/uploads/
 
 # Logs
 *.log
